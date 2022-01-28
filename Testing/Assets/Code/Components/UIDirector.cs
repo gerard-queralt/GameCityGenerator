@@ -7,6 +7,8 @@ public class UIDirector : MonoBehaviour
     [SerializeField] GameObject m_blurWidget;
     [SerializeField] GameObject m_pauseMenu;
 
+    private int m_numCircles = 0;
+
     private void Awake()
     {
         Debug.Assert(m_blurWidget != null, "Blur widget not set in UIDirector");
@@ -36,5 +38,15 @@ public class UIDirector : MonoBehaviour
     {
         m_blurWidget.gameObject.SetActive(false);
         m_pauseMenu.gameObject.SetActive(false);
+    }
+
+    public void OnNumCirclesChanged(int i_numCircles)
+    {
+        m_numCircles = i_numCircles;
+    }
+
+    public int GetNumCircles()
+    {
+        return m_numCircles;
     }
 }

@@ -2,17 +2,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Animator))]
 public class ChestVisual : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    Animator m_animator;
+    [SerializeField] GameObject m_openFX;
+
+    private void Awake()
     {
-        
+        m_animator = GetComponent<Animator>();
     }
 
-    // Update is called once per frame
-    void Update()
+    public void OnAction()
     {
-        
+        m_animator.SetTrigger("OnOpened");
+    }
+
+    public void OnOpenStarted()
+    {
+        Instantiate(m_openFX, transform);
     }
 }

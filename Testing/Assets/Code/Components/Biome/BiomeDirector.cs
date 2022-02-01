@@ -7,6 +7,7 @@ public class BiomeDirector : MonoBehaviour
 {
     [SerializeField] GameObject m_pieces;
     [SerializeField] GameObject[] m_bigDecos;
+    [SerializeField] BiomeDef[] m_biomes;
     MapData m_map;
 
     class MapData
@@ -35,6 +36,7 @@ public class BiomeDirector : MonoBehaviour
     private void Awake()
     {
         Debug.Assert(m_pieces != null, "Pieces prefab not set in BiomeDirector");
+        Debug.Assert(m_biomes.Length > 0, "No biomes set in BiomeDirector");
     }
 
     // Start is called before the first frame update
@@ -43,12 +45,17 @@ public class BiomeDirector : MonoBehaviour
         m_map = GenerateMap();
         InstantiateMap(m_map);
 
-        Shader.SetGlobalFloat("_TileOffset_LV0_X", 0.0f);
-        Shader.SetGlobalFloat("_TileOffset_LV0_Y", 2.0f);
-        Shader.SetGlobalFloat("_TileOffset_LV1_X", 0.0f);
-        Shader.SetGlobalFloat("_TileOffset_LV1_Y", 1.0f);
-        Shader.SetGlobalFloat("_TileOffset_LV2_X", 0.0f);
-        Shader.SetGlobalFloat("_TileOffset_LV2_Y", 0.0f);
+        int biomeId = UnityEngine.Random.Range(0, m_biomes.Length);
+        BiomeDef biome = m_biomes[biomeId];
+
+        Shader.SetGlobalFloat("_TileOffset_LV0_X", biome.tileset_0_offset.x);
+        Shader.SetGlobalFloat("_TileOffset_LV0_Y", biome.tileset_0_offset.y);
+        Shader.SetGlobalFloat("_TileOffset_LV1_X", biome.tileset_1_offset.x);
+        Shader.SetGlobalFloat("_TileOffset_LV1_Y", biome.tileset_1_offset.y);
+        Shader.SetGlobalFloat("_TileOffset_LV2_X", biome.tileset_2_offset.x);
+        Shader.SetGlobalFloat("_TileOffset_LV2_Y", biome.tileset_2_offset.y);
+        Shader.SetGlobalFloat("_TreeOffset_X", biome.treeset_offset.x);
+        Shader.SetGlobalFloat("_TreeOffset_Y", biome.treeset_offset.y);
     }
 
     MapData GenerateMap()
@@ -84,6 +91,30 @@ public class BiomeDirector : MonoBehaviour
             }
             deltaX = 0.0f;
             deltaZ -= 6.0f;
+        }
+
+        int numRows = i_mapData.m_cells.Length;
+        for (int row = 0; row < numRows; row++)
+        {
+            int numCols = i_mapData.m_cells[row].Length;
+            for (int col = 0; col < numCols; col++)
+            {
+                if (i_mapData.m_cells[row][col] == 1)
+                {
+                    float treeChance = UnityEngine.Random.Range(0, 100);
+                    if (treeChance < 15)
+                    {
+                        float posZ = (numRows - row - 2) * 3.0f;
+                        float posX = (col - 1) * 3.0f;
+                        float rotationDegrees = UnityEngine.Random.Range(0, 359);
+                        float deltaXtree = UnityEngine.Random.Range(-0.5f, 0.5f);
+                        float deltaZtree = UnityEngine.Random.Range(-0.5f, 0.5f);
+                        GameObject deco = Instantiate(m_bigDecos[0], new Vector3(posX + deltaXtree, 0.0f, posZ + deltaZtree), Quaternion.AngleAxis(rotationDegrees, Vector3.up), transform);
+                        float randomScale = UnityEngine.Random.Range(0.8f, 1.0f);
+                        deco.transform.localScale = new Vector3(randomScale, randomScale, randomScale);
+                    }
+                }
+            }
         }
     }
 

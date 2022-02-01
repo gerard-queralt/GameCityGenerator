@@ -25,6 +25,13 @@ Shader "Custom/TileShader"
         sampler2D _TileSet_LV1;
         sampler2D _TileSet_LV2;
 
+        uniform float _TileOffset_LV0_X = 0.0f;
+        uniform float _TileOffset_LV0_Y = 0.0f;
+        uniform float _TileOffset_LV1_X = 0.0f;
+        uniform float _TileOffset_LV1_Y = 0.0f;
+        uniform float _TileOffset_LV2_X = 0.0f;
+        uniform float _TileOffset_LV2_Y = 0.0f;
+
         struct Input
         {
             float2 uv_TileSet_LV0;
@@ -46,9 +53,9 @@ Shader "Custom/TileShader"
         void surf (Input IN, inout SurfaceOutputStandard o)
         {
             // Albedo comes from a texture tinted by color
-            fixed4 color0 = tex2D (_TileSet_LV0, IN.uv_TileSet_LV0 / 4.0);
-            fixed4 color1 = tex2D (_TileSet_LV1, IN.uv2_TileSet_LV1 / 4.0);
-            fixed4 color2 = tex2D (_TileSet_LV2, IN.uv3_TileSet_LV2 / 4.0);
+            fixed4 color0 = tex2D (_TileSet_LV0, (IN.uv_TileSet_LV0 + float2(_TileOffset_LV0_X, _TileOffset_LV0_Y)) / 4.0);
+            fixed4 color1 = tex2D (_TileSet_LV1, (IN.uv2_TileSet_LV1 + float2(_TileOffset_LV1_X, _TileOffset_LV1_Y)) / 4.0);
+            fixed4 color2 = tex2D (_TileSet_LV2, (IN.uv3_TileSet_LV2 + float2(_TileOffset_LV2_X, _TileOffset_LV2_Y)) / 4.0);
             o.Albedo = color2.a * color2 + (1.0 - color2.a) * (color1.a * color1 + (1.0 - color1.a) * color0);
             // Metallic and smoothness come from slider variables
             o.Metallic = _Metallic;

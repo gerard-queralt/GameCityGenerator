@@ -12,19 +12,21 @@ public interface ICharacter
 
 public class Character : ICharacter
 {
-    public SaveData m_data;
-
     public struct SaveData
     {
         public int level;
         public int xp;
     }
 
+    public SaveData m_data;
+
     public Character()
     {
-        m_data = new SaveData();
-        m_data.level = 0;
-        m_data.xp = 0;
+        m_data = new SaveData
+        {
+            level = 0,
+            xp = 0
+        };
     }
 
     public int level

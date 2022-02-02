@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,5 +29,12 @@ public class World : MonoBehaviour
     public void RequestAddXP(int i_xp_value)
     {
         Game.instance.AddXP(i_xp_value);
+    }
+
+    public void RequestAddItem(ItemDef i_item, uint i_itemAmount)
+    {
+        Debug.Assert(i_item != null, "Trying to add null item");
+        Debug.Assert(i_itemAmount > 0, "Trying to add zero or less items");
+        Game.instance.AddItem(i_item, i_itemAmount);
     }
 }

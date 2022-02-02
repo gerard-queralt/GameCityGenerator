@@ -4,26 +4,27 @@ using UnityEngine;
 
 public class Game
 {
-    private static Game s_instance = null;
-    private Character m_character;
-    private SaveData m_data;
-
     public struct SaveData
     {
-        public int numTimesXPGiven;
+        
     }
+
+    private static Game s_instance = null;
+    private SaveData m_data;
+    private Character m_character;
+    private Inventory m_inventory;
 
     private Game()
     {
         m_character = new Character();
+        m_inventory = new Inventory();
 
         SaveDelegate saveDelegate = new SaveDelegate();
-        SaveDelegate.LoadResult result = saveDelegate.Load(out m_data, out m_character.m_data);
+        SaveDelegate.LoadResult result = saveDelegate.Load(out m_data, out m_character.m_data, out m_inventory.m_data);
         if (result == SaveDelegate.LoadResult.Failed)
         {
             m_character = new Character();
             m_data = new SaveData();
-            m_data.numTimesXPGiven = 0;
         }
     }
 
@@ -49,13 +50,22 @@ public class Game
     public void AddXP(int i_xp_value)
     {
         m_character.AddXP(i_xp_value);
-        m_data.numTimesXPGiven++;
         Save();
+    }
+
+    public void AddItem(ItemDef i_item, uint i_itemAmount)
+    {
+        bool accepted = true;
+        if (accepted)
+        {
+            m_inventory.AddItem(i_item, i_itemAmount);
+            Save();
+        }
     }
 
     private void Save()
     {
         SaveDelegate saveDelegate = new SaveDelegate();
-        saveDelegate.Save(m_data, m_character.m_data);
+        saveDelegate.Save(m_data, m_character.m_data, m_inventory.m_data);
     }
 }

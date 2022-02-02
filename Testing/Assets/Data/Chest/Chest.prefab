@@ -57,6 +57,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 674c86ac1781b14429b093ee74b742ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_itemToReward: {fileID: 0}
+  m_itemAmount: 1
 --- !u!114 &717787197
 MonoBehaviour:
   m_ObjectHideFlags: 0

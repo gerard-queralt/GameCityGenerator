@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -48,6 +49,18 @@ public class GameDirector : MonoBehaviour
                 m_ui.DeactivatePause();
                 m_pausedState = PausedState.Active;
                 break;
+        }
+    }
+
+    public void RequestAddXP(int i_xp_value)
+    {
+        if (m_pausedState == PausedState.Active)
+        {
+            Game.instance.AddXP(i_xp_value);
+        }
+        else
+        {
+            Debug.LogError("Trying to add xp while game is paused!");
         }
     }
 }

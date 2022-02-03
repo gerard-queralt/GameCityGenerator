@@ -5,5 +5,5 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Item Definition", menuName = "Game/Item Definition", order = 1)]
 public class ItemDef : ScriptableObject
 {
-    public string itemId; //unique
+    public Sprite icon;
 }

@@ -1,0 +1,15 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf11e5a8dc2396d4f9c46462c90c4f3f, type: 3}
+  m_Name: red_mana
+  m_EditorClassIdentifier: 
+  icon: {fileID: 21300000, guid: 24d23077668b51242b9937b2cada900c, type: 3}

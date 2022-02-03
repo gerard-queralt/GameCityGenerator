@@ -11,16 +11,18 @@ public class Game
 
     private static Game s_instance = null;
     private SaveData m_data;
+    private Database m_database;
     private Character m_character;
     private Inventory m_inventory;
 
     private Game()
     {
+        m_database = new Database();
         m_character = new Character();
         m_inventory = new Inventory();
 
         SaveDelegate saveDelegate = new SaveDelegate();
-        SaveDelegate.LoadResult result = saveDelegate.Load(out m_data, out m_character.m_data, out m_inventory.m_data);
+        SaveDelegate.LoadResult result = saveDelegate.Load(m_database, out m_data, out m_character.m_data, out m_inventory.m_data);
         if (result == SaveDelegate.LoadResult.Failed)
         {
             m_character = new Character();
@@ -39,11 +41,26 @@ public class Game
         }
     }
 
+    public IDatabase database
+    {
+        get
+        {
+            return m_database;
+        }
+    }
     public ICharacter character
     {
         get
         {
             return m_character;
+        }
+    }
+
+    public IInventory inventory
+    {
+        get
+        {
+            return m_inventory;
         }
     }
 

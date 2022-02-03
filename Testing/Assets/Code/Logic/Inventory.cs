@@ -3,7 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Inventory
+public interface IInventory
+{
+    public uint GetItemAmount(ItemDef i_item);
+}
+
+public class Inventory : IInventory
 {
     public struct SaveData
     {
@@ -30,5 +35,16 @@ public class Inventory
         {
             m_data.stock.Add(i_item, i_itemAmount);
         }
+    }
+
+    public uint GetItemAmount(ItemDef i_item)
+    {
+        uint amount;
+        //Redundant but more readable
+        if (m_data.stock.TryGetValue(i_item, out amount))
+        {
+            return amount;
+        }
+        return 0;
     }
 }

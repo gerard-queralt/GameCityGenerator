@@ -4,49 +4,18 @@ using UnityEngine;
 
 public abstract class CityElement : ScriptableObject
 {
-    public enum RepeatType
+    public abstract GameObject prefab
     {
-        Unique,
-        GivenNumber,
-        Unlimited
+        get;
     }
 
-    [SerializeField] GameObject m_prefab;
-
-    public GameObject prefab
+    public abstract uint inhabitants
     {
-        get
-        {
-            return m_prefab;
-        }
+        get;
     }
 
-    public virtual uint inhabitants
+    public abstract uint? instanceLimit
     {
-        get
-        {
-            return 0;
-        }
-    }
-
-    public virtual RepeatType repeatType
-    {
-        get
-        {
-            return RepeatType.Unique;
-        }
-    }
-
-    public virtual uint instances
-    {
-        get
-        {
-            return 1;
-        }
-    }
-
-    protected virtual void Awake()
-    {
-        Debug.Assert(m_prefab != null, "Prefab not set in CityElement[" + name + "]");
+        get;
     }
 }

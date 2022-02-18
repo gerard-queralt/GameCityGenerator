@@ -321,6 +321,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_cityElements:
   - {fileID: 11400000, guid: afd881a6d6f5aa34fb4b1659968ad367, type: 2}
+  - {fileID: 11400000, guid: 6d5eeb2517febd44ca44c9e83187da06, type: 2}
+  m_affinities:
+  - elementA: {fileID: 11400000, guid: afd881a6d6f5aa34fb4b1659968ad367, type: 2}
+    elementB: {fileID: 11400000, guid: 6d5eeb2517febd44ca44c9e83187da06, type: 2}
+    affinity: 4
   m_pathTexture: {fileID: 0}
 --- !u!4 &897296824
 Transform:

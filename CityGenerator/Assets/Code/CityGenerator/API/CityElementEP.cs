@@ -30,6 +30,14 @@ public class CityElementEP : CityElement
         }
     }
 
+    public override Affinity defaultAffinity
+    {
+        get
+        {
+            return Affinity.Indifferent;
+        }
+    }
+
     protected virtual void Awake()
     {
 

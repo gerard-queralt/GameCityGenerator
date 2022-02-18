@@ -2,26 +2,49 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class AdvancedCityElement : CityElement
+[CreateAssetMenu(fileName = "Advanced City Element", menuName = "City Generator/Advanced City Element", order = 1)]
+public class AdvancedCityElement : CityElement
 {
-    public enum Affinity
+    [SerializeField] GameObject m_prefab;
+    [SerializeField] uint m_inhabitants = 0;
+    [SerializeField] bool m_setInstanceLimit = false;
+    [SerializeField] uint? m_instanceLimit = null; //Unity can't serialize Nullables
+    [SerializeField] Affinity m_defaultAffinity = Affinity.Indifferent;
+
+    public override GameObject prefab
     {
-        VeryClose,
-        Close,
-        Indifferent,
-        Far,
-        VeryFar
+        get
+        {
+            return m_prefab;
+        }
     }
 
-    [System.Serializable]
-    public struct CityElementAffinity
+    public override uint inhabitants
     {
-        public CityElement element;
-        public Affinity affinity;
+        get
+        {
+            return m_inhabitants;
+        }
     }
 
-    public abstract CityElementAffinity[] cityElementAffinities
+    public override uint? instanceLimit
     {
-        get;
+        get
+        {
+            return m_instanceLimit;
+        }
+    }
+
+    public override Affinity defaultAffinity
+    {
+        get
+        {
+            return m_defaultAffinity;
+        }
+    }
+
+    private void Awake()
+    {
+        Debug.Assert(m_prefab != null, "Prefab not set in AdvancedCityElement[" + name + "]");
     }
 }

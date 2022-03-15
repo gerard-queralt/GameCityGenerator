@@ -4,15 +4,6 @@ using UnityEngine;
 
 public abstract class CityElement : ScriptableObject
 {
-    public enum Affinity
-    {
-        VeryClose,
-        Close,
-        Indifferent,
-        Far,
-        VeryFar
-    }
-
     public abstract GameObject prefab
     {
         get;
@@ -28,7 +19,7 @@ public abstract class CityElement : ScriptableObject
         get;
     }
 
-    public abstract Affinity defaultAffinity
+    public abstract float defaultAffinity
     {
         get;
     }

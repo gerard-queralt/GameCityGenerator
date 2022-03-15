@@ -30,11 +30,11 @@ public class CityElementEP : CityElement
         }
     }
 
-    public override Affinity defaultAffinity
+    public override float defaultAffinity
     {
         get
         {
-            return Affinity.Indifferent;
+            return 0.5f;
         }
     }
 

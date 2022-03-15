@@ -14,4 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_prefab: {fileID: 0}
   m_inhabitants: 0
-  m_defaultAffinity: 2
+  m_setInstanceLimit: 0
+  m_instanceLimit: 0
+  m_defaultAffinity: 0.5

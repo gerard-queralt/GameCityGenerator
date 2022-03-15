@@ -8,8 +8,8 @@ public class AdvancedCityElement : CityElement
     [SerializeField] GameObject m_prefab;
     [SerializeField] uint m_inhabitants = 0;
     [SerializeField] bool m_setInstanceLimit = false;
-    [SerializeField] uint? m_instanceLimit = null; //Unity can't serialize Nullables
-    [SerializeField] Affinity m_defaultAffinity = Affinity.Indifferent;
+    [SerializeField] uint m_instanceLimit = 0;
+    [Range(0f, 1f)][SerializeField] float m_defaultAffinity = 0.5f;
 
     public override GameObject prefab
     {
@@ -31,11 +31,13 @@ public class AdvancedCityElement : CityElement
     {
         get
         {
+            if (!m_setInstanceLimit)
+                return null;
             return m_instanceLimit;
         }
     }
 
-    public override Affinity defaultAffinity
+    public override float defaultAffinity
     {
         get
         {

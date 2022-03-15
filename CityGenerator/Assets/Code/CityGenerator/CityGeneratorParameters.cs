@@ -10,7 +10,7 @@ public class CityGeneratorParameters : MonoBehaviour
     {
         public CityElement elementA;
         public CityElement elementB;
-        public CityElement.Affinity affinity;
+        [Range(0f, 1f)]public float affinity;
     }
 
     private struct CityElementPair
@@ -19,10 +19,11 @@ public class CityGeneratorParameters : MonoBehaviour
         public CityElement second;
     }
 
+    [SerializeField] uint m_targetInhabitants;
     [SerializeField] CityElement[] m_cityElements;
     private HashSet<CityElement> m_elementsSet;
     [SerializeField] CityElementAffinity[] m_affinities;
-    private Dictionary<CityElementPair, CityElement.Affinity> m_afinitiesDict;
+    private Dictionary<CityElementPair, float> m_afinitiesDict;
     [SerializeField] Texture m_pathTexture;
 
     private void Awake()
@@ -35,7 +36,7 @@ public class CityGeneratorParameters : MonoBehaviour
 
     private void PopulateDictionary()
     {
-        m_afinitiesDict = new Dictionary<CityElementPair, CityElement.Affinity>();
+        m_afinitiesDict = new Dictionary<CityElementPair, float>();
         int index = 0; //Used to give better warnings
         foreach (CityElementAffinity affinity in m_affinities)
         {
@@ -47,7 +48,9 @@ public class CityGeneratorParameters : MonoBehaviour
                                 "Element A [" + affinity.elementA.name + "] is not an element of the City, so this affinity will have no effect");
                 Debug.Assert(m_elementsSet.Contains(affinity.elementB),
                                 "Element B [" + affinity.elementB.name + "] is not an element of the City, so this affinity will have no effect");
+                
                 CityElementPair pair = new CityElementPair { first = affinity.elementA, second = affinity.elementB };
+                
                 bool affinityNotSet = !m_afinitiesDict.ContainsKey(pair) 
                                 && !m_afinitiesDict.ContainsKey(new CityElementPair { first = affinity.elementB, second = affinity.elementA });
                 Debug.Assert(affinityNotSet,

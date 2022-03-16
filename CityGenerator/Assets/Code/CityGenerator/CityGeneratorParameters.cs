@@ -13,22 +13,66 @@ public class CityGeneratorParameters : MonoBehaviour
         [Range(0f, 1f)]public float affinity;
     }
 
-    private struct CityElementPair
+    public struct CityElementPair
     {
         public CityElement first;
         public CityElement second;
     }
 
     [SerializeField] uint m_targetInhabitants;
+    [SerializeField] Vector3 m_areaCenter;
+    [SerializeField] Vector3 m_areaSize;
+    private Bounds m_area;
     [SerializeField] CityElement[] m_cityElements;
     private HashSet<CityElement> m_elementsSet;
     [SerializeField] CityElementAffinity[] m_affinities;
-    private Dictionary<CityElementPair, float> m_afinitiesDict;
+    private Dictionary<CityElementPair, float> m_affinitiesDict;
     [SerializeField] Texture m_pathTexture;
+
+    public uint targetInhabitants
+    {
+        get
+        {
+            return m_targetInhabitants;
+        }
+    }
+
+    public Bounds area
+    {
+        get
+        {
+            return m_area;
+        }
+    }
+
+    public HashSet<CityElement> cityElements
+    {
+        get
+        {
+            return m_elementsSet;
+        }
+    }
+
+    public Dictionary<CityElementPair, float> affinities
+    {
+        get
+        {
+            return m_affinitiesDict;
+        }
+    }
+
+    public Texture pathTexture
+    {
+        get
+        {
+            return m_pathTexture;
+        }
+    }
 
     private void Awake()
     {
         Debug.Assert(m_cityElements.Length > 0, "No CityElements set");
+        m_area = new Bounds(m_areaCenter, m_areaSize);
         m_elementsSet = new HashSet<CityElement>(m_cityElements);
         PopulateDictionary();
         Debug.Assert(m_pathTexture != null, "Path texture not set");
@@ -36,7 +80,7 @@ public class CityGeneratorParameters : MonoBehaviour
 
     private void PopulateDictionary()
     {
-        m_afinitiesDict = new Dictionary<CityElementPair, float>();
+        m_affinitiesDict = new Dictionary<CityElementPair, float>();
         int index = 0; //Used to give better warnings
         foreach (CityElementAffinity affinity in m_affinities)
         {
@@ -51,13 +95,13 @@ public class CityGeneratorParameters : MonoBehaviour
                 
                 CityElementPair pair = new CityElementPair { first = affinity.elementA, second = affinity.elementB };
                 
-                bool affinityNotSet = !m_afinitiesDict.ContainsKey(pair) 
-                                && !m_afinitiesDict.ContainsKey(new CityElementPair { first = affinity.elementB, second = affinity.elementA });
+                bool affinityNotSet = !m_affinitiesDict.ContainsKey(pair) 
+                                && !m_affinitiesDict.ContainsKey(new CityElementPair { first = affinity.elementB, second = affinity.elementA });
                 Debug.Assert(affinityNotSet,
                                 "Affinity between Elements " + affinity.elementA.name + " and " + affinity.elementB.name + " already defined");
                 if (affinityNotSet)
                 {
-                    m_afinitiesDict.Add(pair, affinity.affinity);
+                    m_affinitiesDict.Add(pair, affinity.affinity);
                 }
             }
             index++;

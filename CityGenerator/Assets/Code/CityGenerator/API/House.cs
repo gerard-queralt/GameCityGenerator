@@ -11,7 +11,7 @@ public class House : CityElementEP
     {
         get
         {
-            return inhabitants;
+            return m_inhabitants;
         }
     }
 

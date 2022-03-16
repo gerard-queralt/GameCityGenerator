@@ -22,7 +22,7 @@ public class AlgorithmMain : MonoBehaviour
     {
         HashSet<CityElement> elements = m_params.cityElements;
         Bounds area = m_params.area;
-        Vector3 currentPosition = new Vector3(area.max.x, 0f, area.min.z);
+        Vector3 currentPosition = new Vector3(area.min.x, 0f, area.min.z);
         uint targetInhabitants = m_params.targetInhabitants;
         uint currentInhabitants = 0;
         while(currentInhabitants < targetInhabitants)
@@ -31,11 +31,32 @@ public class AlgorithmMain : MonoBehaviour
             {
                 GameObject prefab = element.prefab;
                 GameObject instance = Instantiate(prefab, area.center, prefab.transform.rotation);
-                Bounds sizeOfElement = instance.GetComponent<MeshRenderer>().bounds; //does not work
-                currentPosition += sizeOfElement.extents;
-                instance.transform.position = currentPosition;
+                Bounds boundsOfElement = ComputeBoundsOfGameObject(instance);
+                currentPosition.x += boundsOfElement.extents.x;
+                if(currentPosition.x > area.max.x)
+                {
+                    currentPosition.x = area.min.x + boundsOfElement.extents.x;
+                    currentPosition.z += boundsOfElement.extents.z;
+                }
+                instance.transform.position = new Vector3(currentPosition.x, currentPosition.y, currentPosition.z + boundsOfElement.extents.z);
                 currentInhabitants += element.inhabitants;
             }
         }
+    }
+
+    private Bounds ComputeBoundsOfGameObject(GameObject gameObject)
+    {
+        Bounds boundsOfElement = new Bounds(gameObject.transform.position, Vector3.one);
+        foreach (Transform childTransform in gameObject.transform)
+        {
+            GameObject child = childTransform.gameObject;
+            MeshRenderer childRenderer = child.GetComponent<MeshRenderer>();
+            if (childRenderer != null)
+            {
+                Bounds childBounds = childRenderer.bounds;
+                boundsOfElement.Encapsulate(childBounds);
+            }
+        }
+        return boundsOfElement;
     }
 }

@@ -47,15 +47,11 @@ public class AlgorithmMain : MonoBehaviour
     private Bounds ComputeBoundsOfGameObject(GameObject gameObject)
     {
         Bounds boundsOfElement = new Bounds(gameObject.transform.position, Vector3.one);
-        foreach (Transform childTransform in gameObject.transform)
+        MeshRenderer[] renderers = gameObject.GetComponentsInChildren<MeshRenderer>();
+        foreach(MeshRenderer renderer in renderers)
         {
-            GameObject child = childTransform.gameObject;
-            MeshRenderer childRenderer = child.GetComponent<MeshRenderer>();
-            if (childRenderer != null)
-            {
-                Bounds childBounds = childRenderer.bounds;
-                boundsOfElement.Encapsulate(childBounds);
-            }
+            Bounds rendererBounds = renderer.bounds;
+            boundsOfElement.Encapsulate(rendererBounds);
         }
         return boundsOfElement;
     }

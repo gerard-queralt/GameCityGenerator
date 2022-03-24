@@ -1,0 +1,1 @@
+The contents of this folder were retrieved from https://github.com/RafaelKuebler/DelaunayVoronoi, allowed through a MIT License.

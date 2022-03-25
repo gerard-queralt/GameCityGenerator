@@ -27,7 +27,7 @@ public class CityGeneratorParameters : MonoBehaviour
     private HashSet<CityElement> m_elementsSet;
     [SerializeField] CityElementAffinity[] m_affinities;
     private Dictionary<CityElementPair, float> m_affinitiesDict;
-    [SerializeField] Texture m_pathTexture;
+    [SerializeField] Texture m_roadTexture;
 
     public uint targetInhabitants
     {
@@ -61,11 +61,11 @@ public class CityGeneratorParameters : MonoBehaviour
         }
     }
 
-    public Texture pathTexture
+    public Texture roadTexture
     {
         get
         {
-            return m_pathTexture;
+            return m_roadTexture;
         }
     }
 
@@ -75,7 +75,7 @@ public class CityGeneratorParameters : MonoBehaviour
         m_area = new Bounds(m_areaCenter, m_areaSize);
         m_elementsSet = new HashSet<CityElement>(m_cityElements);
         PopulateDictionary();
-        Debug.Assert(m_pathTexture != null, "Path texture not set");
+        Debug.Assert(m_roadTexture != null, "Road texture not set");
     }
 
     private void PopulateDictionary()

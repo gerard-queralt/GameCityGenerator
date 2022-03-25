@@ -23,6 +23,14 @@ public class Crossroad
         }
     }
 
+    public Vector2 AsVector2
+    {
+        get
+        {
+            return new Vector2(m_x, m_z);
+        }
+    }
+
     public Crossroad(float x, float z)
     {
         m_x = x;

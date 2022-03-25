@@ -27,7 +27,7 @@ public class AlgorithmMain : MonoBehaviour
         HashSet<CityElement> elements = m_params.cityElements;
         Bounds area = m_params.area;
 
-        HashSet<Road> roads = RoadBuilder.BuildRoads(m_params.roadTexture, 6, area);
+        HashSet<Road> roads = RoadBuilder.BuildRoads(m_params.roadTexture, m_params.nCrossroads, area);
         
         Vector3 currentPosition = new Vector3(area.min.x, 0f, area.min.z);
         uint targetInhabitants = m_params.targetInhabitants;
@@ -38,7 +38,7 @@ public class AlgorithmMain : MonoBehaviour
             {
                 GameObject prefab = element.prefab;
                 GameObject instance = Instantiate(prefab, area.center, prefab.transform.rotation /*tmp*/ * Quaternion.AngleAxis(180f, Vector3.up), cityParent.transform);
-                Bounds boundsOfElement = ElementPositioner.ComputeBoundsOfGameObject(instance);
+                Bounds boundsOfElement = element.boundingBox;
                 currentPosition.x += boundsOfElement.extents.x;
                 if(currentPosition.x > area.max.x)
                 {

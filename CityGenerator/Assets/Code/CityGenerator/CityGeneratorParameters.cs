@@ -28,6 +28,7 @@ public class CityGeneratorParameters : MonoBehaviour
     [SerializeField] CityElementAffinity[] m_affinities;
     private Dictionary<CityElementPair, float> m_affinitiesDict;
     [SerializeField] Texture m_roadTexture;
+    [SerializeField] uint m_crossroads;
 
     public uint targetInhabitants
     {
@@ -66,6 +67,19 @@ public class CityGeneratorParameters : MonoBehaviour
         get
         {
             return m_roadTexture;
+        }
+    }
+
+    public uint nCrossroads
+    {
+        get
+        {
+            if(m_crossroads == 0)
+            {
+                uint randomNumber = (uint) Mathf.RoundToInt(UnityEngine.Random.Range(0, /*tmp*/ 10));
+                return randomNumber;
+            }
+            return m_crossroads;
         }
     }
 

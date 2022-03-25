@@ -14,6 +14,14 @@ public class CityElementEP : CityElement
         }
     }
 
+    public override Bounds boundingBox
+    {
+        get
+        {
+            return ElementPositioner.ComputeBoundsOfGameObject(m_prefab);
+        }
+    }
+
     public override uint inhabitants
     {
         get

@@ -34,8 +34,8 @@ public class Road
 
     public void CreatePlane(Texture roadTexture, Bounds cityArea)
     {
-        Vector2 begin = new Vector2(m_start.x, m_start.z);
-        Vector2 end = new Vector2(m_end.x, m_end.z);
+        Vector2 begin = m_start.AsVector2;
+        Vector2 end = m_end.AsVector2;
         m_plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
 
         Vector2 center = new Vector2(begin.x + end.x, begin.y + end.y) / 2f;

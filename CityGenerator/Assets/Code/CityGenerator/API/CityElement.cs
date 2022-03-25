@@ -9,6 +9,11 @@ public abstract class CityElement : ScriptableObject
         get;
     }
 
+    public abstract Bounds boundingBox
+    {
+        get;
+    }
+
     public abstract uint inhabitants
     {
         get;

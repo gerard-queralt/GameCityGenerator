@@ -6,6 +6,7 @@ using UnityEngine;
 public class AdvancedCityElement : CityElement
 {
     [SerializeField] GameObject m_prefab;
+    [SerializeField] Vector3 m_sizeOfBox;
     [SerializeField] uint m_inhabitants = 0;
     [SerializeField] bool m_setInstanceLimit = false;
     [SerializeField] uint m_instanceLimit = 0;
@@ -16,6 +17,19 @@ public class AdvancedCityElement : CityElement
         get
         {
             return m_prefab;
+        }
+    }
+
+    public override Bounds boundingBox
+    {
+        get
+        {
+            Bounds computedBounds = ElementPositioner.ComputeBoundsOfGameObject(m_prefab);
+            if (m_sizeOfBox == Vector3.zero)
+            {
+                return computedBounds;
+            }
+            return new Bounds(computedBounds.center, m_sizeOfBox);
         }
     }
 

@@ -27,5 +27,10 @@
             int hCode = (int)Point1.X ^ (int)Point1.Y ^ (int)Point2.X ^ (int)Point2.Y;
             return hCode.GetHashCode();
         }
+
+        public Edge Reverse()
+        {
+            return new Edge(Point2, Point1);
+        }
     }
 }

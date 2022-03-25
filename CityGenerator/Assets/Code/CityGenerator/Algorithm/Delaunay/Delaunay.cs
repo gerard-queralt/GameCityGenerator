@@ -6,19 +6,14 @@ namespace DelaunayVoronoi
 {
     public class DelaunayTriangulator
     {
-        private double MaxX { get; set; }
-        private double MaxY { get; set; }
         private IEnumerable<Triangle> border;
 
-        public IEnumerable<Point> GeneratePoints(int amount, double maxX, double maxY)
+        public IEnumerable<Point> GeneratePoints(int amount, double minX, double minY, double maxX, double maxY)
         {
-            MaxX = maxX;
-            MaxY = maxY;
-
-            var point0 = new Point(0, 0);
-            var point1 = new Point(0, MaxY);
-            var point2 = new Point(MaxX, MaxY);
-            var point3 = new Point(MaxX, 0);
+            var point0 = new Point(minX, minY);
+            var point1 = new Point(minX, maxY);
+            var point2 = new Point(maxX, maxY);
+            var point3 = new Point(maxX, minY);
             var points = new List<Point>() { point0, point1, point2, point3 };
             var tri1 = new Triangle(point0, point1, point2);
             var tri2 = new Triangle(point0, point2, point3);
@@ -27,8 +22,8 @@ namespace DelaunayVoronoi
             var random = new Random();
             for (int i = 0; i < amount - 4; i++)
             {
-                var pointX = random.NextDouble() * MaxX;
-                var pointY = random.NextDouble() * MaxY;
+                var pointX = minX + random.NextDouble() * (maxX - minX);
+                var pointY = minY + random.NextDouble() * (maxY - minY);
                 points.Add(new Point(pointX, pointY));
             }
 
@@ -37,7 +32,6 @@ namespace DelaunayVoronoi
 
         public IEnumerable<Triangle> BowyerWatson(IEnumerable<Point> points)
         {
-            //var supraTriangle = GenerateSupraTriangle();
             var triangulation = new HashSet<Triangle>(border);
 
             foreach (var point in points)
@@ -77,20 +71,6 @@ namespace DelaunayVoronoi
             var grouped = edges.GroupBy(o => o);
             var boundaryEdges = edges.GroupBy(o => o).Where(o => o.Count() == 1).Select(o => o.First());
             return boundaryEdges.ToList();
-        }
-
-        private Triangle GenerateSupraTriangle()
-        {
-            //   1  -> maxX
-            //  / \
-            // 2---3
-            // |
-            // v maxY
-            var margin = 500;
-            var point1 = new Point(0.5 * MaxX, -2 * MaxX - margin);
-            var point2 = new Point(-2 * MaxY - margin, 2 * MaxY + margin);
-            var point3 = new Point(2 * MaxX + MaxY + margin, 2 * MaxY + margin);
-            return new Triangle(point1, point2, point3);
         }
 
         private ISet<Triangle> FindBadTriangles(Point point, HashSet<Triangle> triangles)

@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e872e70170a7ea4c937e4091cbb53f1, type: 3}
   m_Name: MarioHouse
   m_EditorClassIdentifier: 
-  m_prefab: {fileID: 1245377234434525667, guid: 86cbaefd47c88824fa57e8306a0fabc9, type: 3}
+  m_prefab: {fileID: 2185422660654337867, guid: 86cbaefd47c88824fa57e8306a0fabc9, type: 3}
   m_inhabitants: 1

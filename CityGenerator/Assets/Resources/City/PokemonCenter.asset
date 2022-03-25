@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 14dab41e3c5a08b41b8ac61afab8d971, type: 3}
-  m_Name: Advanced City Element
+  m_Name: PokemonCenter
   m_EditorClassIdentifier: 
-  m_prefab: {fileID: 0}
-  m_inhabitants: 0
-  m_setInstanceLimit: 0
-  m_instanceLimit: 0
+  m_prefab: {fileID: 6212229418027376189, guid: 80181325ef2083b45928895c48337ef7, type: 3}
+  m_inhabitants: 1
+  m_setInstanceLimit: 1
+  m_instanceLimit: 1
   m_defaultAffinity: 0.5

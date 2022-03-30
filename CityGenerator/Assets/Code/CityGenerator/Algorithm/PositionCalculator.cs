@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ElementPositioner
+public class PositionCalculator
 {
     public static Bounds ComputeBoundsOfGameObject(GameObject i_gameObject)
     {

@@ -18,7 +18,7 @@ public class CityElementEP : CityElement
     {
         get
         {
-            return ElementPositioner.ComputeBoundsOfGameObject(m_prefab);
+            return PositionCalculator.ComputeBoundsOfGameObject(m_prefab);
         }
     }
 

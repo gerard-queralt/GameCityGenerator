@@ -24,12 +24,12 @@ public class AdvancedCityElement : CityElement
     {
         get
         {
-            Bounds computedBounds = ElementPositioner.ComputeBoundsOfGameObject(m_prefab);
+            Bounds computedBounds = PositionCalculator.ComputeBoundsOfGameObject(m_prefab);
             if (m_sizeOfBox == Vector3.zero)
             {
                 return computedBounds;
             }
-            return new Bounds(computedBounds.center, m_sizeOfBox);
+            return new Bounds(new Vector3(0f, computedBounds.center.y, 0f), m_sizeOfBox);
         }
     }
 

@@ -22,34 +22,31 @@ public class AlgorithmMain : MonoBehaviour
 
     public void Run()
     {
-        GameObject cityParent = new GameObject("City");
-
-        HashSet<CityElement> elements = m_params.cityElements;
         Bounds area = m_params.area;
 
         HashSet<Road> roads = RoadBuilder.BuildRoads(m_params.roadTexture, m_params.nCrossroads, area);
-        
-        Vector3 currentPosition = new Vector3(area.min.x, 0f, area.min.z);
-        uint targetInhabitants = m_params.targetInhabitants;
-        uint currentInhabitants = 0;
-        while(currentInhabitants < targetInhabitants)
+        HashSet<GameObject> elementInstances = ElementPlacer.PlaceElements(m_params.cityElements, roads, area, m_params.targetInhabitants);
+
+        CreateHierarchy(elementInstances, roads);
+    }
+
+    private void CreateHierarchy(HashSet<GameObject> i_elements, HashSet<Road> i_roads)
+    {
+        Transform cityParent = new GameObject("City").transform;
+        Transform elementParent = new GameObject("Elements").transform;
+        Transform roadParent = new GameObject("Roads").transform;
+
+        elementParent.SetParent(cityParent);
+        roadParent.SetParent(cityParent);
+
+        foreach(GameObject element in i_elements)
         {
-            foreach (CityElement element in elements)
-            {
-                GameObject prefab = element.prefab;
-                GameObject instance = Instantiate(prefab, area.center, prefab.transform.rotation /*tmp*/ * Quaternion.AngleAxis(180f, Vector3.up), cityParent.transform);
-                Bounds boundsOfElement = element.boundingBox;
-                currentPosition.x += boundsOfElement.extents.x;
-                if(currentPosition.x > area.max.x)
-                {
-                    currentPosition.x = area.min.x + boundsOfElement.extents.x;
-                    currentPosition.z += boundsOfElement.extents.z;
-                }
-                Vector3 raycastStartPosition = new Vector3(currentPosition.x, area.max.y, currentPosition.z + boundsOfElement.extents.z);
-                float groundCoord = ElementPositioner.FindGroundCoordinate(raycastStartPosition, area.min.y);
-                instance.transform.position = new Vector3(currentPosition.x, groundCoord, currentPosition.z + boundsOfElement.extents.z);
-                currentInhabitants += element.inhabitants;
-            }
+            element.transform.SetParent(elementParent);
+        }
+
+        foreach(Road road in i_roads)
+        {
+            road.plane.transform.SetParent(roadParent);
         }
     }
 }

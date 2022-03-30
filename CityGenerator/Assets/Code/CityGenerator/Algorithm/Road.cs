@@ -26,6 +26,14 @@ public class Road
         }
     }
 
+    public GameObject plane
+    {
+        get
+        {
+            return m_plane;
+        }
+    }
+
     public Road(Edge edge)
     {
         m_start = edge.Point1.crossroad;
@@ -39,7 +47,7 @@ public class Road
         m_plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
 
         Vector2 center = new Vector2(begin.x + end.x, begin.y + end.y) / 2f;
-        float planeY = ElementPositioner.FindGroundCoordinate(new Vector3(center.x, cityArea.max.y, center.y), cityArea.min.y);
+        float planeY = PositionCalculator.FindGroundCoordinate(new Vector3(center.x, cityArea.max.y, center.y), cityArea.min.y);
         m_plane.transform.position = new Vector3(center.x, planeY + 0.01f, center.y);
         Bounds planeBounds = m_plane.GetComponent<MeshRenderer>().bounds;
         float scaleZ = Vector2.Distance(begin, end) / planeBounds.size.z;

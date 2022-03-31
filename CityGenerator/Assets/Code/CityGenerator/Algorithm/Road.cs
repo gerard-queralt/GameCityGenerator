@@ -10,6 +10,18 @@ public class Road
     private Crossroad m_end;
     private GameObject m_plane;
 
+    public struct PositionAndRotation
+    {
+        public Vector3 position;
+        public Quaternion rotation;
+
+        public PositionAndRotation(Vector3 position, Quaternion rotation)
+        {
+            this.position = position;
+            this.rotation = rotation;
+        }
+    }
+
     public Crossroad start
     {
         get
@@ -34,6 +46,26 @@ public class Road
         }
     }
 
+    public PositionAndRotation left
+    {
+        get
+        {
+            Vector3 position = m_plane.transform.position;
+            Quaternion rotation = m_plane.transform.rotation;
+            return new PositionAndRotation(position, rotation);
+        }
+    }
+
+    public PositionAndRotation right
+    {
+        get
+        {
+            Vector3 position = m_plane.transform.position;
+            Quaternion rotation = m_plane.transform.rotation * Quaternion.AngleAxis(180f, Vector3.up);
+            return new PositionAndRotation(position, rotation);
+        }
+    }
+
     public Road(Edge edge)
     {
         m_start = edge.Point1.crossroad;
@@ -50,9 +82,9 @@ public class Road
         float planeY = PositionCalculator.FindGroundCoordinate(new Vector3(center.x, cityArea.max.y, center.y), cityArea.min.y);
         m_plane.transform.position = new Vector3(center.x, planeY + 0.01f, center.y);
         Bounds planeBounds = m_plane.GetComponent<MeshRenderer>().bounds;
-        float scaleZ = Vector2.Distance(begin, end) / planeBounds.size.z;
-        m_plane.transform.localScale = new Vector3(0.5f, 1f, scaleZ);
-        float angle = Vector2.Angle(begin - end, Vector2.up);
+        float scaleX = Vector2.Distance(begin, end) / planeBounds.size.x;
+        m_plane.transform.localScale = new Vector3(scaleX, 1f, 0.5f);
+        float angle = Vector2.Angle(begin - end, Vector2.right);
         m_plane.transform.rotation = Quaternion.AngleAxis(angle, Vector3.up);
 
         Renderer planeRenderer = m_plane.GetComponent<Renderer>();

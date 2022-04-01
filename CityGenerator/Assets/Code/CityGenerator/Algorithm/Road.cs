@@ -6,25 +6,12 @@ using DelaunayVoronoi;
 
 public class Road
 {
+    private GameObject m_plane;
     private Crossroad m_start;
     private Crossroad m_end;
-    private int m_directionXAxis;
-    private GameObject m_plane;
-
+    private float m_width;
     private float m_deltaLeftX = 0f;
     private float m_deltaRightX = 0f;
-
-    public struct PositionAndRotation
-    {
-        public Vector3 position;
-        public Quaternion rotation;
-
-        public PositionAndRotation(Vector3 position, Quaternion rotation)
-        {
-            this.position = position;
-            this.rotation = rotation;
-        }
-    }
 
     public enum LeftRight
     {
@@ -56,57 +43,70 @@ public class Road
         }
     }
 
-    public PositionAndRotation left
+    public float width
     {
         get
         {
-            Vector3 position = new Vector3(m_start.x + m_deltaLeftX * m_directionXAxis, m_plane.transform.position.y, m_start.z);
-            Quaternion rotation = m_plane.transform.rotation;
-            return new PositionAndRotation(position, rotation);
+            return m_width;
         }
     }
 
-    public PositionAndRotation right
+    public Quaternion rotation
     {
         get
         {
-            Vector3 position = new Vector3(m_start.x + m_deltaRightX * m_directionXAxis, m_plane.transform.position.y, m_start.z);
-            Quaternion rotation = m_plane.transform.rotation * Quaternion.AngleAxis(180f, Vector3.up);
-            return new PositionAndRotation(position, rotation);
+            return m_plane.transform.rotation;
         }
     }
 
-    public Road(Edge edge)
+    public Vector2 direction
     {
-        m_start = edge.Point1.crossroad;
-        m_end = edge.Point2.crossroad;
-        if (m_start.x < m_end.x)
+        get
         {
-            m_directionXAxis = 1;
-        }
-        else
-        {
-            m_directionXAxis = -1;
+            return (m_end.AsVector2 - m_start.AsVector2).normalized;
         }
     }
 
-    public void CreatePlane(Texture roadTexture, Bounds cityArea)
+    public Vector2 perpendicular
+    {
+        get
+        {
+            return Vector2.Perpendicular(direction).normalized;
+        }
+    }
+
+    public float height
+    {
+        get
+        {
+            return m_plane.transform.position.y;
+        }
+    }
+
+    public Road(Edge i_edge)
+    {
+        m_start = i_edge.Point1.crossroad;
+        m_end = i_edge.Point2.crossroad;
+    }
+
+    public void CreatePlane(Texture i_roadTexture, float i_width, Bounds i_cityArea)
     {
         Vector2 begin = m_start.AsVector2;
         Vector2 end = m_end.AsVector2;
         m_plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        m_width = i_width;
 
         Vector2 center = new Vector2(begin.x + end.x, begin.y + end.y) / 2f;
-        float planeY = PositionCalculator.FindGroundCoordinate(new Vector3(center.x, cityArea.max.y, center.y), cityArea.min.y);
+        float planeY = PositionCalculator.FindGroundCoordinate(new Vector3(center.x, i_cityArea.max.y, center.y), i_cityArea.min.y);
         m_plane.transform.position = new Vector3(center.x, planeY + 0.01f, center.y);
         Bounds planeBounds = m_plane.GetComponent<MeshRenderer>().bounds;
         float scaleX = Vector2.Distance(begin, end) / planeBounds.size.x;
-        m_plane.transform.localScale = new Vector3(scaleX, 1f, 0.5f);
+        m_plane.transform.localScale = new Vector3(scaleX, 1f, m_width / planeBounds.size.z);
         float angle = Vector2.Angle(begin - end, Vector2.right);
         m_plane.transform.rotation = Quaternion.AngleAxis(angle, Vector3.up);
 
         Renderer planeRenderer = m_plane.GetComponent<Renderer>();
-        planeRenderer.material.mainTexture = roadTexture;
+        planeRenderer.material.mainTexture = i_roadTexture;
         Mesh planeMesh = m_plane.GetComponent<MeshFilter>().mesh;
         Vector3[] vertices = planeMesh.vertices;
         Vector2[] uvs = new Vector2[vertices.Length];
@@ -119,10 +119,19 @@ public class Road
         planeMesh.uv = uvs;
     }
 
-    public void IncreaseDelta(LeftRight leftRight, Bounds i_bounds)
+    public float GetDelta(LeftRight i_leftRight)
+    {
+        if(i_leftRight == LeftRight.Left)
+        {
+            return m_deltaLeftX;
+        }
+        return m_deltaRightX;
+    }
+
+    public void IncreaseDelta(LeftRight i_leftRight, Bounds i_bounds)
     {
         float delta = i_bounds.size.x;
-        if (leftRight == LeftRight.Left)
+        if (i_leftRight == LeftRight.Left)
         {
             m_deltaLeftX += delta;
         }

@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,6 +27,8 @@ public class CityGeneratorParameters : MonoBehaviour
     [SerializeField] CityElementAffinity[] m_affinities;
     private Dictionary<CityElementPair, float> m_affinitiesDict;
     [SerializeField] Texture m_roadTexture;
+    [SerializeField] float m_roadWidthMin;
+    [SerializeField] float m_roadWidthMax;
     [SerializeField] uint m_crossroads;
 
     public uint targetInhabitants
@@ -67,6 +68,22 @@ public class CityGeneratorParameters : MonoBehaviour
         get
         {
             return m_roadTexture;
+        }
+    }
+
+    public float roadWidthMin
+    {
+        get
+        {
+            return m_roadWidthMin;
+        }
+    }
+
+    public float roadWidthMax
+    {
+        get
+        {
+            return m_roadWidthMax;
         }
     }
 

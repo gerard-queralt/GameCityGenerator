@@ -32,34 +32,43 @@ public class ElementPlacer
         return instances;
     }
 
-    private static GameObject PlaceElement(CityElement element, Road road)
+    private static GameObject PlaceElement(CityElement i_element, Road i_road)
     {
-        GameObject prefab = element.prefab;
+        GameObject prefab = i_element.prefab;
         GameObject instance = GameObject.Instantiate(prefab, m_area.center, prefab.transform.rotation);
-        Bounds boundsOfElement = element.boundingBox;
-        
-        PositionAndRotation positionAndRotation;
-        LeftRight side = ChooseSide(road);
-        if(side == LeftRight.Left)
-        {
-            positionAndRotation = road.left;
-        }
-        else
-        {
-            positionAndRotation = road.right;
-        }
 
-        Vector3 parcelPosition = positionAndRotation.position;
-        Quaternion rotation = positionAndRotation.rotation;
-
-        Vector3 position = parcelPosition + Quaternion.AngleAxis(rotation.y, Vector3.up) * new Vector3(0f, 0f, 5f - (10f * (int)side) /*tmp*/);
+        LeftRight side = ChooseSide(i_road);
+        Vector3 position = ComputePositionInRoad(i_element, i_road, side);
+        Quaternion rotation = i_road.rotation;
+        if (side == LeftRight.Right)
+        {
+            rotation *= Quaternion.AngleAxis(180f, Vector3.up);
+        }
         instance.transform.SetPositionAndRotation(position, rotation);
-        road.IncreaseDelta(side, boundsOfElement);
-        
-        m_currentInhabitants += element.inhabitants;
-        IncreaseInstanceCount(element);
+
+        m_currentInhabitants += i_element.inhabitants;
+        IncreaseInstanceCount(i_element);
         
         return instance;
+    }
+
+    private static Vector3 ComputePositionInRoad(CityElement i_element, Road i_road, LeftRight i_side)
+    {
+        Bounds boundsOfElement = i_element.boundingBox;
+        float deltaElement = boundsOfElement.extents.x;
+        Vector2 origin = i_road.start.AsVector2;
+        Vector2 direction = i_road.direction;
+        float delta = i_road.GetDelta(i_side) + deltaElement;
+        Vector2 perpendicular = i_road.perpendicular;
+        float width = i_road.width;
+        if (i_side == LeftRight.Right)
+        {
+            width *= -1;
+        }
+        Vector2 positionInPlane = origin + direction * delta + perpendicular * width;
+        Vector3 position = new Vector3(positionInPlane.x, i_road.height, positionInPlane.y);
+        i_road.IncreaseDelta(i_side, boundsOfElement);
+        return position;
     }
 
     private static Road ChooseRoad(List<Road> i_roads) //tmp

@@ -6,10 +6,10 @@ using DelaunayVoronoi;
 
 public class RoadBuilder
 {
-    public static HashSet<Road> BuildRoads(Texture roadTexture, uint nCrossroads, Bounds cityArea)
+    public static HashSet<Road> BuildRoads(Texture i_roadTexture, float i_roadWidthMin, float i_roadWidthMax, uint i_nCrossroads, Bounds i_cityArea)
     {
         DelaunayTriangulator triangulator = new DelaunayTriangulator();
-        IEnumerable<Point> points = triangulator.GeneratePoints((int)nCrossroads, cityArea.min.x, cityArea.min.z, cityArea.max.x, cityArea.max.z);
+        IEnumerable<Point> points = triangulator.GeneratePoints((int)i_nCrossroads, i_cityArea.min.x, i_cityArea.min.z, i_cityArea.max.x, i_cityArea.max.z);
         IEnumerable<Triangle> triangulation = triangulator.BowyerWatson(points);
         HashSet<Edge> edges = new HashSet<Edge>();
         foreach (Triangle triangle in triangulation)
@@ -34,7 +34,8 @@ public class RoadBuilder
         foreach (Edge edge in edges)
         {
             Road road = new Road(edge);
-            road.CreatePlane(roadTexture, cityArea);
+            float width = Random.Range(i_roadWidthMin, i_roadWidthMax);
+            road.CreatePlane(i_roadTexture, width, i_cityArea);
             roads.Add(road);
         }
 

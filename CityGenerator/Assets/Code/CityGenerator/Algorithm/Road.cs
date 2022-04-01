@@ -8,7 +8,11 @@ public class Road
 {
     private Crossroad m_start;
     private Crossroad m_end;
+    private int m_directionXAxis;
     private GameObject m_plane;
+
+    private float m_deltaLeftX = 0f;
+    private float m_deltaRightX = 0f;
 
     public struct PositionAndRotation
     {
@@ -20,6 +24,12 @@ public class Road
             this.position = position;
             this.rotation = rotation;
         }
+    }
+
+    public enum LeftRight
+    {
+        Left,
+        Right
     }
 
     public Crossroad start
@@ -50,7 +60,7 @@ public class Road
     {
         get
         {
-            Vector3 position = m_plane.transform.position;
+            Vector3 position = new Vector3(m_start.x + m_deltaLeftX * m_directionXAxis, m_plane.transform.position.y, m_start.z);
             Quaternion rotation = m_plane.transform.rotation;
             return new PositionAndRotation(position, rotation);
         }
@@ -60,7 +70,7 @@ public class Road
     {
         get
         {
-            Vector3 position = m_plane.transform.position;
+            Vector3 position = new Vector3(m_start.x + m_deltaRightX * m_directionXAxis, m_plane.transform.position.y, m_start.z);
             Quaternion rotation = m_plane.transform.rotation * Quaternion.AngleAxis(180f, Vector3.up);
             return new PositionAndRotation(position, rotation);
         }
@@ -70,6 +80,14 @@ public class Road
     {
         m_start = edge.Point1.crossroad;
         m_end = edge.Point2.crossroad;
+        if (m_start.x < m_end.x)
+        {
+            m_directionXAxis = 1;
+        }
+        else
+        {
+            m_directionXAxis = -1;
+        }
     }
 
     public void CreatePlane(Texture roadTexture, Bounds cityArea)
@@ -99,5 +117,18 @@ public class Road
             uvs[i] = new Vector2(transformedVertex.x, transformedVertex.z);
         }
         planeMesh.uv = uvs;
+    }
+
+    public void IncreaseDelta(LeftRight leftRight, Bounds i_bounds)
+    {
+        float delta = i_bounds.size.x;
+        if (leftRight == LeftRight.Left)
+        {
+            m_deltaLeftX += delta;
+        }
+        else
+        {
+            m_deltaRightX += delta;
+        }
     }
 }

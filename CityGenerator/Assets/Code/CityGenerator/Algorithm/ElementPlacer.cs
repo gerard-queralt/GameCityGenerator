@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using static Road;
+
 public class ElementPlacer
 {
     private static Dictionary<CityElement, uint> m_instanceCount = new Dictionary<CityElement, uint>();
@@ -17,7 +19,7 @@ public class ElementPlacer
         m_currentInhabitants = 0;
 
         HashSet<GameObject> instances = new HashSet<GameObject>();
-        Road road = new List<Road>(i_roads)[0]; //TMP
+        Road road = ChooseRoad(new List<Road>(i_roads));
         while (m_currentInhabitants < m_targetInhabitants)
         {
             foreach (CityElement element in i_elements)
@@ -35,19 +37,52 @@ public class ElementPlacer
         GameObject prefab = element.prefab;
         GameObject instance = GameObject.Instantiate(prefab, m_area.center, prefab.transform.rotation);
         Bounds boundsOfElement = element.boundingBox;
-        Road.PositionAndRotation positionAndRotation = road.left;
-        Vector3 centerOfRoad = positionAndRotation.position;
+        
+        PositionAndRotation positionAndRotation;
+        LeftRight side = ChooseSide(road);
+        if(side == LeftRight.Left)
+        {
+            positionAndRotation = road.left;
+        }
+        else
+        {
+            positionAndRotation = road.right;
+        }
+
+        Vector3 parcelPosition = positionAndRotation.position;
         Quaternion rotation = positionAndRotation.rotation;
-        Vector3 position = centerOfRoad + PositionAfterRotationInXZPlane(new Vector3(0f, 0f, 5f), rotation.y * Mathf.Deg2Rad);
+
+        Vector3 position = parcelPosition + Quaternion.AngleAxis(rotation.y, Vector3.up) * new Vector3(0f, 0f, 5f - (10f * (int)side) /*tmp*/);
         instance.transform.SetPositionAndRotation(position, rotation);
+        road.IncreaseDelta(side, boundsOfElement);
+        
         m_currentInhabitants += element.inhabitants;
+        IncreaseInstanceCount(element);
+        
         return instance;
     }
 
-    private static Vector3 PositionAfterRotationInXZPlane(Vector3 position, float angle)
+    private static Road ChooseRoad(List<Road> i_roads) //tmp
     {
-        float xPrime = position.x * Mathf.Cos(angle) - position.z * Mathf.Sin(angle);
-        float zPrime = position.z * Mathf.Cos(angle) + position.x * Mathf.Sin(angle);
-        return new Vector3(xPrime, position.y, zPrime);
+        int index = Random.Range(0, i_roads.Count);
+        return i_roads[index];
+    }
+
+    private static LeftRight ChooseSide(Road i_road) //tmp
+    {
+        LeftRight random = (LeftRight)Random.Range(0, 2); //max is exclusive
+        return random;
+    }
+
+    private static void IncreaseInstanceCount(CityElement i_element)
+    {
+        if(m_instanceCount.ContainsKey(i_element))
+        {
+            m_instanceCount[i_element] += 1;
+        }
+        else
+        {
+            m_instanceCount.Add(i_element, 1);
+        }
     }
 }

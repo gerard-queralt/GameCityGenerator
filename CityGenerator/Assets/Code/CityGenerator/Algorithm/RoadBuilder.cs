@@ -13,8 +13,7 @@ public class RoadBuilder
     {
         m_triangulator = new DelaunayTriangulator();
         IEnumerable<Point> points = GenerateCrossroads(i_nCrossroads, i_cityArea);
-        //IEnumerable<Point> points = m_triangulator.GeneratePoints((int)i_nCrossroads, i_cityArea.min.x, i_cityArea.min.z, i_cityArea.max.x, i_cityArea.max.z);
-        IEnumerable<Triangle> triangulation = m_triangulator.BowyerWatson(points);
+        IEnumerable<Triangle> triangulation = GenerateTriangles(points);
         HashSet<Edge> edges = new HashSet<Edge>();
         foreach (Triangle triangle in triangulation)
         {
@@ -88,5 +87,14 @@ public class RoadBuilder
             }
         }
         return i_points.Except(pointsToDelete).ToList();
+    }
+
+    private static IEnumerable<Triangle> GenerateTriangles(IEnumerable<Point> i_points)
+    {
+        IEnumerable<Triangle> defaultTriangulation = m_triangulator.BowyerWatson(i_points);
+        IEnumerable<Triangle> triangulation = defaultTriangulation.Where(triangle => 
+                                                                         triangle.Vertices.All(point => 
+                                                                                               i_points.Contains(point)));
+        return triangulation;
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using static Road;
+using System.Linq;
 
 public class ElementPlacer
 {
@@ -19,14 +20,36 @@ public class ElementPlacer
         m_currentInhabitants = 0;
 
         HashSet<GameObject> instances = new HashSet<GameObject>();
-        Road road = ChooseRoad(new List<Road>(i_roads));
+        List<Road> roads = new List<Road>(i_roads);
         while (m_currentInhabitants < m_targetInhabitants)
         {
             foreach (CityElement element in i_elements)
             {
+                Road road = ChooseRoad(roads);
                 GameObject instance = PlaceElement(element, road);
 
-                instances.Add(instance);
+                List<Road> triedRoads = new List<Road>();
+                triedRoads.Add(road);
+                while (instance == null && triedRoads.Count < roads.Count)
+                {
+                    road = ChooseRoad(roads.Except(triedRoads).ToList());
+                    instance = PlaceElement(element, road);
+                    triedRoads.Add(road);
+                }
+
+                if (instance != null)
+                {
+                    instances.Add(instance);
+                    if (m_currentInhabitants >= m_targetInhabitants)
+                    {
+                        break;
+                    }
+                }
+                else
+                {
+                    Debug.Log("Element " + element.name + " could not be placed");
+                    m_currentInhabitants += element.inhabitants; //TMP, for debugging
+                }
             }
         }
         return instances;
@@ -38,6 +61,15 @@ public class ElementPlacer
         GameObject instance = GameObject.Instantiate(prefab, m_area.center, prefab.transform.rotation);
 
         LeftRight side = ChooseSide(i_road);
+        if (!i_road.CanBePlaced(side, i_element.boundingBox))
+        {
+            side = (LeftRight)(((int)side + 1) % 2); //Left becomes Right and viceversa
+            if (!i_road.CanBePlaced(side, i_element.boundingBox))
+            {
+                return null;
+            }
+        }
+
         Vector3 position = ComputePositionInRoad(i_element, i_road, side);
         Quaternion rotation = i_road.rotation;
         if (side == LeftRight.Right)

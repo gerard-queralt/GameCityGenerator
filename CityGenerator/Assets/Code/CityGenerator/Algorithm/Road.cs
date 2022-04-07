@@ -140,4 +140,18 @@ public class Road
             m_deltaRightX += delta;
         }
     }
+
+    public bool CanBePlaced(LeftRight i_leftRight, Bounds i_bounds)
+    {
+        float sizeOfElement = i_bounds.size.x;
+        float delta = GetDelta(i_leftRight) + sizeOfElement;
+        float width = this.width;
+        if (i_leftRight == LeftRight.Right)
+        {
+            width *= -1;
+        }
+        Vector2 maxPositionOfElement = start.AsVector2 + direction * delta + perpendicular * width;
+        return Vector2.Dot((end.AsVector2 - start.AsVector2).normalized, (maxPositionOfElement - end.AsVector2).normalized) < 0f &&
+               Vector2.Dot((start.AsVector2 - end.AsVector2).normalized, (maxPositionOfElement - start.AsVector2).normalized) < 0f;
+    }
 }

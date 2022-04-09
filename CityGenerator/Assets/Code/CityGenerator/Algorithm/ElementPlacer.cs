@@ -71,6 +71,7 @@ public class ElementPlacer
         }
 
         Vector3 position = ComputePositionInRoad(i_element, i_road, side);
+        i_road.IncreaseDelta(side, i_element.boundingBox);
         Quaternion rotation = i_road.rotation;
         if (side == LeftRight.Right)
         {
@@ -86,20 +87,19 @@ public class ElementPlacer
 
     private static Vector3 ComputePositionInRoad(CityElement i_element, Road i_road, LeftRight i_side)
     {
-        Bounds boundsOfElement = i_element.boundingBox;
-        float deltaElement = boundsOfElement.extents.x;
         Vector2 origin = i_road.start.AsVector2;
         Vector2 direction = i_road.direction;
-        float delta = i_road.GetDelta(i_side) + deltaElement;
+        float delta = i_road.GetDelta(i_side);
+        float deltaElement = i_element.boundingBox.extents.x;
+        delta += deltaElement;
         Vector2 perpendicular = i_road.perpendicular;
         float width = i_road.width;
         if (i_side == LeftRight.Right)
         {
             width *= -1;
         }
-        Vector2 positionInPlane = origin + direction * delta + perpendicular * width;
+        Vector2 positionInPlane = origin + direction * delta + perpendicular * width/2f;
         Vector3 position = new Vector3(positionInPlane.x, i_road.height, positionInPlane.y);
-        i_road.IncreaseDelta(i_side, boundsOfElement);
         return position;
     }
 

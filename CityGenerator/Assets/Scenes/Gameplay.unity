@@ -141,7 +141,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &112639743
 Transform:
   m_ObjectHideFlags: 0
@@ -416,16 +416,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 453f02dd0283eb44a992b9e6b667db92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_targetInhabitants: 5
+  m_targetInhabitants: 40
   m_areaCenter: {x: 0, y: 10, z: 0}
   m_areaSize: {x: 50, y: 20, z: 50}
   m_cityElements:
   - {fileID: 11400000, guid: d30caa22576ddd14e9ce76fb1b2bf7c1, type: 2}
   m_affinities: []
   m_roadTexture: {fileID: 2800000, guid: 611b54b59cb1a1f458b409f7ae1db4f1, type: 3}
-  m_roadWidthMin: 2.5
-  m_roadWidthMax: 7.5
-  m_crossroads: 5
+  m_roadWidthMin: 10
+  m_roadWidthMax: 10
+  m_crossroads: 4
 --- !u!4 &897296824
 Transform:
   m_ObjectHideFlags: 0
@@ -652,7 +652,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1170323606
 Transform:
   m_ObjectHideFlags: 0
@@ -784,7 +784,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1316922878
 Transform:
   m_ObjectHideFlags: 0
@@ -1054,7 +1054,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1778731986
 Transform:
   m_ObjectHideFlags: 0

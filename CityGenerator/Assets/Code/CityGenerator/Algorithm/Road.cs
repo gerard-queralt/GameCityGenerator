@@ -83,6 +83,12 @@ public class Road
         }
     }
 
+    public Road(Crossroad start, Crossroad end)
+    {
+        m_start = start;
+        m_end = end;
+    }
+
     public Road(Edge i_edge)
     {
         m_start = i_edge.Point1.crossroad;

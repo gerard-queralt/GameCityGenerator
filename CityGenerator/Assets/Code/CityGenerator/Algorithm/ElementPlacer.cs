@@ -58,7 +58,6 @@ public class ElementPlacer
     private static GameObject PlaceElement(CityElement i_element, Road i_road)
     {
         GameObject prefab = i_element.prefab;
-        GameObject instance = GameObject.Instantiate(prefab, m_area.center, prefab.transform.rotation);
 
         LeftRight side = ChooseSide(i_road);
         if (!i_road.CanBePlaced(side, i_element.boundingBox))
@@ -71,18 +70,27 @@ public class ElementPlacer
         }
 
         Vector3 position = ComputePositionInRoad(i_element, i_road, side);
-        i_road.IncreaseDelta(side, i_element.boundingBox);
         Quaternion rotation = i_road.rotation;
         if (side == LeftRight.Right)
         {
             rotation *= Quaternion.AngleAxis(180f, Vector3.up);
         }
-        instance.transform.SetPositionAndRotation(position, rotation);
 
-        m_currentInhabitants += i_element.inhabitants;
-        IncreaseInstanceCount(i_element);
-        
-        return instance;
+        if (PositionCalculator.CanElementBePlaced(i_element.boundingBox, position, rotation))
+        {
+            GameObject instance = GameObject.Instantiate(prefab, m_area.center, prefab.transform.rotation);
+
+            i_road.IncreaseDelta(side, i_element.boundingBox);
+            instance.transform.SetPositionAndRotation(position, rotation);
+
+            m_currentInhabitants += i_element.inhabitants;
+            IncreaseInstanceCount(i_element);
+
+            CreateTemporalCopyOfElementInstance(instance, i_element.boundingBox);
+
+            return instance;
+        }
+        return null;
     }
 
     private static Vector3 ComputePositionInRoad(CityElement i_element, Road i_road, LeftRight i_side)
@@ -126,5 +134,14 @@ public class ElementPlacer
         {
             m_instanceCount.Add(i_element, 1);
         }
+    }
+
+    private static void CreateTemporalCopyOfElementInstance(GameObject i_instance, Bounds i_boundingBox)
+    {
+        GameObject tmpCopy = GameObject.Instantiate(i_instance);
+        tmpCopy.layer = LayerMask.NameToLayer("CityGenerator_TMPObjects");
+        BoxCollider collider = tmpCopy.AddComponent<BoxCollider>();
+        collider.center = i_boundingBox.center;
+        collider.size = i_boundingBox.size;
     }
 }

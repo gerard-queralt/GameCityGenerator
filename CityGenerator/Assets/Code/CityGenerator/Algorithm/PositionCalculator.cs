@@ -29,4 +29,15 @@ public class PositionCalculator
         }
         return i_minY;
     }
+
+    public static bool CanElementBePlaced(Bounds i_boundingBox, Vector3 i_position, Quaternion i_rotation)
+    {
+        Vector3 halfExtends = i_boundingBox.extents;
+        Vector3 center = i_position;
+        center.y += halfExtends.y;
+        LayerMask mask = LayerMask.GetMask("CityGenerator_TMPObjects");
+        QueryTriggerInteraction queryTrigger = QueryTriggerInteraction.Ignore;
+        bool hitExistingCityObject = Physics.BoxCast(center, halfExtends, Vector3.down, i_rotation, halfExtends.y, mask, queryTrigger);
+        return !hitExistingCityObject;
+    }
 }

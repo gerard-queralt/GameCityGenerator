@@ -2,12 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using DelaunayVoronoi;
+using UnityEditor;
 
 [RequireComponent(typeof(CityGeneratorParameters))]
 public class AlgorithmMain : MonoBehaviour
 {
     CityGeneratorParameters m_params;
+
+    private string m_tmpObjectsLayerName = "CityGenerator_TMPObjects";
 
     private void Awake()
     {
@@ -22,23 +24,35 @@ public class AlgorithmMain : MonoBehaviour
 
     public void Run()
     {
+        bool layerCreated = LayerCreator.CreateLayer(m_tmpObjectsLayerName);
+        if (!layerCreated)
+        {
+            Debug.Log("Temporary layer could not be created");
+        }
+
         Bounds area = m_params.area;
 
         //HashSet<Road> roads = RoadBuilder.BuildRoads(m_params.roadTexture, m_params.roadWidthMin, m_params.roadWidthMax, m_params.nCrossroads, area);
+
+        //debug
         Road road = new Road(new Crossroad(0, 0), new Crossroad(100, 100));
         road.width = 10f;
         Road road1 = new Road(new Crossroad(0, 0), new Crossroad(-100, 100));
         road1.width = 10f;
-
-        //debug
         HashSet<Road> roads = new HashSet<Road>();
         roads.Add(road);
         roads.Add(road1);
         
-        HashSet<GameObject> elementInstances = ElementPlacer.PlaceElements(m_params.cityElements, roads, area, m_params.targetInhabitants);
         HashSet<GameObject> roadInstances = RoadBuilder.InstantiateRoads(roads, m_params.roadTexture, area);
+        HashSet<GameObject> elementInstances = ElementPlacer.PlaceElements(m_params.cityElements, roads, area, m_params.targetInhabitants);
 
         CreateHierarchy(elementInstances, roadInstances);
+
+        if (layerCreated)
+        {
+            DestroyAllTmpObjects();
+            LayerCreator.DeleteLayer(m_tmpObjectsLayerName);
+        }
     }
 
     private void CreateHierarchy(HashSet<GameObject> i_elements, HashSet<GameObject> i_roads)
@@ -58,6 +72,19 @@ public class AlgorithmMain : MonoBehaviour
         foreach(GameObject road in i_roads)
         {
             road.transform.SetParent(roadParent);
+        }
+    }
+
+    private void DestroyAllTmpObjects()
+    {
+        GameObject[] allObjects = FindObjectsOfType<GameObject>();
+        int layer = LayerMask.NameToLayer(m_tmpObjectsLayerName);
+        foreach (GameObject gameObject in allObjects)
+        {
+            if(gameObject.layer == layer)
+            {
+                Destroy(gameObject);
+            }
         }
     }
 }

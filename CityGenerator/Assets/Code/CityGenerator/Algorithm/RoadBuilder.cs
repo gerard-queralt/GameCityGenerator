@@ -84,7 +84,15 @@ public class RoadBuilder
         }
         planeMesh.uv = uvs;
 
+        CreateTemporalCopyOfRoadInstance(plane);
+
         return plane;
+    }
+
+    private static void CreateTemporalCopyOfRoadInstance(GameObject i_instance)
+    {
+        GameObject tmpCopy = GameObject.Instantiate(i_instance);
+        tmpCopy.layer = LayerMask.NameToLayer("CityGenerator_TMPObjects");
     }
 
     private static IEnumerable<Point> GenerateCrossroads(uint i_nCrossroads, Bounds i_cityArea)

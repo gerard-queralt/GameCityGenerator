@@ -99,7 +99,8 @@ public class ElementPlacer
             width *= -1;
         }
         Vector2 positionInPlane = origin + direction * delta + perpendicular * width/2f;
-        Vector3 position = new Vector3(positionInPlane.x, i_road.height, positionInPlane.y);
+        float height = PositionCalculator.FindGroundCoordinate(new Vector3(positionInPlane.x, m_area.max.y, positionInPlane.y), m_area.min.y);
+        Vector3 position = new Vector3(positionInPlane.x, height, positionInPlane.y);
         return position;
     }
 

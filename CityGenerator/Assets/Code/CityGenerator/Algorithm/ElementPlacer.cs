@@ -13,6 +13,15 @@ public class ElementPlacer
     private Dictionary<CityElement, uint> m_instanceCount = new Dictionary<CityElement, uint>();
     private uint m_currentInhabitants = 0;
 
+    private struct PositionAndRotation
+    {
+        public Vector3 position;
+        public Quaternion rotation;
+        //Necessary to increase the road's delta
+        public Road road;
+        public LeftRight side;
+    }
+
     public ElementPlacer(PositionCalculator i_positionCalculator, Bounds i_area, uint targetInhabitants)
     {
         m_positionCalculator = i_positionCalculator;
@@ -23,107 +32,112 @@ public class ElementPlacer
     public HashSet<GameObject> PlaceElements(HashSet<CityElement> i_elements, HashSet<Road> i_roads)
     {
         HashSet<GameObject> instances = new HashSet<GameObject>();
-        List<Road> roads = new List<Road>(i_roads);
         while (m_currentInhabitants < m_targetInhabitants)
         {
+            bool placedElementThisIteration = false;
             foreach (CityElement element in i_elements)
             {
-                Road road = ChooseRoad(roads);
-                GameObject instance = PlaceElement(element, road);
-
-                List<Road> triedRoads = new List<Road>();
-                triedRoads.Add(road);
-                while (instance == null && triedRoads.Count < roads.Count)
+                if (m_currentInhabitants + element.inhabitants <= m_targetInhabitants)
                 {
-                    road = ChooseRoad(roads.Except(triedRoads).ToList());
-                    instance = PlaceElement(element, road);
-                    triedRoads.Add(road);
-                }
+                    List<PositionAndRotation> candidates = FindPositionCandidates(element, i_roads);
 
-                if (instance != null)
-                {
-                    instances.Add(instance);
-                    if (m_currentInhabitants >= m_targetInhabitants)
+                    if (candidates.Count != 0)
                     {
-                        break;
+                        PositionAndRotation bestCandidate = FindBestCandidate(element, candidates);
+                        GameObject instance = PlaceElement(element, bestCandidate);
+                        instances.Add(instance);
+                        placedElementThisIteration = true;
+                    }
+                    else
+                    {
+                        Debug.Log("Element " + element.name + " could not be placed");
                     }
                 }
-                else
-                {
-                    Debug.Log("Element " + element.name + " could not be placed");
-                    m_currentInhabitants += element.inhabitants; //TMP, for debugging
-                }
+            }
+            if (!placedElementThisIteration)
+            {
+                Debug.Log("Target inhabitants could not be reached. Expected: " + m_targetInhabitants + ", Actual: " + m_currentInhabitants);
+                break;
             }
         }
         return instances;
     }
 
-    private GameObject PlaceElement(CityElement i_element, Road i_road)
+    private List<PositionAndRotation> FindPositionCandidates(CityElement i_element, HashSet<Road> i_roads)
     {
-        GameObject prefab = i_element.prefab;
-
-        LeftRight side = ChooseSide(i_road);
-        if (!i_road.CanBePlaced(side, i_element.boundingBox))
+        List<PositionAndRotation> candidates = new List<PositionAndRotation>();
+        foreach (Road road in i_roads)
         {
-            side = (LeftRight)(((int)side + 1) % 2); //Left becomes Right and viceversa
-            if (!i_road.CanBePlaced(side, i_element.boundingBox))
+            foreach (LeftRight side in System.Enum.GetValues(typeof(LeftRight)))
             {
-                return null;
+                float delta = road.GetDelta(side);
+                while (road.CanBePlaced(side, i_element.boundingBox, delta))
+                {
+                    Vector3 position = ComputePositionInRoad(i_element, road, side, delta);
+                    Quaternion rotation = road.rotation;
+                    if (side == LeftRight.Right)
+                    {
+                        rotation *= Quaternion.AngleAxis(180f, Vector3.up);
+                    }
+
+                    if (m_positionCalculator.CanElementBePlaced(i_element.boundingBox, position, rotation))
+                    {
+                        PositionAndRotation candidate = new PositionAndRotation
+                        {
+                            position = position,
+                            rotation = rotation,
+                            road = road,
+                            side = side
+                        };
+                        candidates.Add(candidate);
+                        break;
+                    }
+                    delta += 0.1f;
+                }
             }
         }
-
-        Vector3 position = ComputePositionInRoad(i_element, i_road, side,);
-        Quaternion rotation = i_road.rotation;
-        if (side == LeftRight.Right)
-        {
-            rotation *= Quaternion.AngleAxis(180f, Vector3.up);
-        }
-
-        if (m_positionCalculator.CanElementBePlaced(i_element.boundingBox, position, rotation))
-        {
-            GameObject instance = GameObject.Instantiate(prefab, m_area.center, prefab.transform.rotation);
-
-            i_road.IncreaseDelta(side, i_element.boundingBox);
-            instance.transform.SetPositionAndRotation(position, rotation);
-
-            m_currentInhabitants += i_element.inhabitants;
-            IncreaseInstanceCount(i_element);
-
-            CreateTemporalCopyOfElementInstance(instance, i_element.boundingBox);
-
-            return instance;
-        }
-        return null;
+        return candidates;
     }
 
-    private Vector3 ComputePositionInRoad(CityElement i_element, Road i_road, LeftRight i_side, float delta)
+    private PositionAndRotation FindBestCandidate(CityElement i_element, List<PositionAndRotation> i_candidates) //TMP
+    {
+        int index = Random.Range(0, i_candidates.Count);
+        return i_candidates[index];
+    }
+
+    private GameObject PlaceElement(CityElement i_element, PositionAndRotation i_positionAndRotation)
+    {
+        GameObject prefab = i_element.prefab;
+        GameObject instance = GameObject.Instantiate(prefab, m_area.center, prefab.transform.rotation);
+
+        instance.transform.SetPositionAndRotation(i_positionAndRotation.position, i_positionAndRotation.rotation);
+
+        m_currentInhabitants += i_element.inhabitants;
+        IncreaseInstanceCount(i_element);
+
+        CreateTemporaryCollider(instance, i_element.boundingBox);
+
+        i_positionAndRotation.road.IncreaseDelta(i_positionAndRotation.side, i_element.boundingBox);
+
+        return instance;
+    }
+
+    private Vector3 ComputePositionInRoad(CityElement i_element, Road i_road, LeftRight i_side, float i_delta)
     {
         Vector2 origin = i_road.start.AsVector2;
         Vector2 direction = i_road.direction;
         float deltaElement = i_element.boundingBox.extents.x;
-        delta += deltaElement;
+        i_delta += deltaElement;
         Vector2 perpendicular = i_road.perpendicular;
         float width = i_road.width;
         if (i_side == LeftRight.Right)
         {
             width *= -1;
         }
-        Vector2 positionInPlane = origin + direction * delta + perpendicular * width/2f;
-        float height = m_positionCalculator.FindGroundCoordinate(new Vector3(positionInPlane.x, m_area.max.y, positionInPlane.y), m_area.min.y);
+        Vector2 positionInPlane = origin + direction * i_delta + perpendicular * width/2f;
+        float height = m_positionCalculator.FindGroundCoordinate(new Vector3(positionInPlane.x, m_area.max.y, positionInPlane.y));
         Vector3 position = new Vector3(positionInPlane.x, height, positionInPlane.y);
         return position;
-    }
-
-    private Road ChooseRoad(List<Road> i_roads) //tmp
-    {
-        int index = Random.Range(0, i_roads.Count);
-        return i_roads[index];
-    }
-
-    private LeftRight ChooseSide(Road i_road) //tmp
-    {
-        LeftRight random = (LeftRight)Random.Range(0, 2); //max is exclusive
-        return random;
     }
 
     private void IncreaseInstanceCount(CityElement i_element)
@@ -138,11 +152,11 @@ public class ElementPlacer
         }
     }
 
-    private void CreateTemporalCopyOfElementInstance(GameObject i_instance, Bounds i_boundingBox)
+    private void CreateTemporaryCollider(GameObject i_instance, Bounds i_boundingBox)
     {
-        GameObject tmpCopy = GameObject.Instantiate(i_instance);
-        tmpCopy.layer = LayerMask.NameToLayer("CityGenerator_TMPObjects");
-        BoxCollider collider = tmpCopy.AddComponent<BoxCollider>();
+        GameObject tmpObject = GameObject.Instantiate(i_instance);
+        tmpObject.layer = LayerMask.NameToLayer("CityGenerator_TMPObjects");
+        BoxCollider collider = tmpObject.AddComponent<BoxCollider>();
         collider.center = i_boundingBox.center;
         collider.size = i_boundingBox.size;
     }

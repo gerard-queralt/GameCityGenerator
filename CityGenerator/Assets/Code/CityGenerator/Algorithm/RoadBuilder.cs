@@ -67,7 +67,7 @@ public class RoadBuilder
         GameObject plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
 
         Vector2 center = new Vector2(start.x + end.x, start.y + end.y) / 2f;
-        float planeY = m_positionCalculator.FindGroundCoordinate(new Vector3(center.x, i_cityArea.max.y, center.y), i_cityArea.min.y);
+        float planeY = m_positionCalculator.FindGroundCoordinate(new Vector3(center.x, i_cityArea.max.y, center.y));
         plane.transform.position = new Vector3(center.x, planeY + 0.01f, center.y);
         
         Bounds planeBounds = plane.GetComponent<MeshRenderer>().bounds;

@@ -43,7 +43,7 @@ public class AlgorithmMain : MonoBehaviour
         roads.Add(road);
         roads.Add(road1);
 
-        PositionCalculator positionCalculator = new PositionCalculator();
+        PositionCalculator positionCalculator = new PositionCalculator(area);
         ElementPlacer elementPlacer = new ElementPlacer(positionCalculator, area, m_params.targetInhabitants);
         RoadBuilder roadBuilder = new RoadBuilder(positionCalculator);
 
@@ -54,8 +54,8 @@ public class AlgorithmMain : MonoBehaviour
 
         if (layerCreated)
         {
-            //DestroyAllTmpObjects();
-            //LayerCreator.DeleteLayer(m_tmpObjectsLayerName);
+            DestroyAllTmpObjects();
+            LayerCreator.DeleteLayer(m_tmpObjectsLayerName);
         }
     }
 
@@ -87,7 +87,6 @@ public class AlgorithmMain : MonoBehaviour
         {
             if(gameObject.layer == layer)
             {
-                //Debug.Log(LayerMask.GetMask(LayerMask.LayerToName(gameObject.layer)) + " original: " + LayerMask.GetMask(m_tmpObjectsLayerName));
                 Destroy(gameObject);
             }
         }

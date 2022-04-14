@@ -87,7 +87,8 @@ public class Road
 
     private void ComputeRotation()
     {
-        float angle = Vector2.Angle(m_start.AsVector2 - m_end.AsVector2, Vector2.right);
+        Vector2 distance = m_start.AsVector2 - m_end.AsVector2;
+        float angle = Vector2.SignedAngle(distance, Vector2.right);
         m_rotation = Quaternion.AngleAxis(angle, Vector3.up);
     }
 

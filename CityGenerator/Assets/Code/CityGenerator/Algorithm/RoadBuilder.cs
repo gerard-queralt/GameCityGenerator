@@ -7,11 +7,16 @@ using System.Linq;
 
 public class RoadBuilder
 {
-    private static DelaunayTriangulator m_triangulator;
+    private PositionCalculator m_positionCalculator;
+    private DelaunayTriangulator m_triangulator = new DelaunayTriangulator();
 
-    public static HashSet<Road> BuildRoads(float i_roadWidthMin, float i_roadWidthMax, uint i_nCrossroads, Bounds i_cityArea)
+    public RoadBuilder(PositionCalculator i_positionCalculator)
     {
-        m_triangulator = new DelaunayTriangulator();
+        m_positionCalculator = i_positionCalculator;
+    }
+
+    public HashSet<Road> BuildRoads(float i_roadWidthMin, float i_roadWidthMax, uint i_nCrossroads, Bounds i_cityArea)
+    {
         IEnumerable<Point> points = GenerateCrossroads(i_nCrossroads, i_cityArea);
         IEnumerable<Triangle> triangulation = GenerateTriangles(points);
         HashSet<Edge> edges = new HashSet<Edge>();
@@ -44,7 +49,7 @@ public class RoadBuilder
         return roads;
     }
 
-    public static HashSet<GameObject> InstantiateRoads(HashSet<Road> i_roads, Texture i_roadTexture, Bounds i_cityArea)
+    public HashSet<GameObject> InstantiateRoads(HashSet<Road> i_roads, Texture i_roadTexture, Bounds i_cityArea)
     {
         HashSet<GameObject> instances = new HashSet<GameObject>();
         foreach (Road road in i_roads)
@@ -55,14 +60,14 @@ public class RoadBuilder
         return instances;
     }
 
-    private static GameObject CreatePlane(Road i_road, Texture i_roadTexture, Bounds i_cityArea)
+    private GameObject CreatePlane(Road i_road, Texture i_roadTexture, Bounds i_cityArea)
     {
         Vector2 start = i_road.start.AsVector2;
         Vector2 end = i_road.end.AsVector2;
         GameObject plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
 
         Vector2 center = new Vector2(start.x + end.x, start.y + end.y) / 2f;
-        float planeY = PositionCalculator.FindGroundCoordinate(new Vector3(center.x, i_cityArea.max.y, center.y), i_cityArea.min.y);
+        float planeY = m_positionCalculator.FindGroundCoordinate(new Vector3(center.x, i_cityArea.max.y, center.y), i_cityArea.min.y);
         plane.transform.position = new Vector3(center.x, planeY + 0.01f, center.y);
         
         Bounds planeBounds = plane.GetComponent<MeshRenderer>().bounds;
@@ -84,18 +89,18 @@ public class RoadBuilder
         }
         planeMesh.uv = uvs;
 
-        CreateTemporalCopyOfRoadInstance(plane);
+        //CreateTemporalCopyOfRoadInstance(plane);
 
         return plane;
     }
 
-    private static void CreateTemporalCopyOfRoadInstance(GameObject i_instance)
+    private void CreateTemporalCopyOfRoadInstance(GameObject i_instance)
     {
         GameObject tmpCopy = GameObject.Instantiate(i_instance);
         tmpCopy.layer = LayerMask.NameToLayer("CityGenerator_TMPObjects");
     }
 
-    private static IEnumerable<Point> GenerateCrossroads(uint i_nCrossroads, Bounds i_cityArea)
+    private IEnumerable<Point> GenerateCrossroads(uint i_nCrossroads, Bounds i_cityArea)
     {
         List<Point> points = m_triangulator.GeneratePoints((int)i_nCrossroads * 100,
                                                            i_cityArea.min.x,
@@ -113,7 +118,7 @@ public class RoadBuilder
         return points;
     }
 
-    private static List<Point> FilterPoints(List<Point> i_points, float i_radius)
+    private List<Point> FilterPoints(List<Point> i_points, float i_radius)
     {
         System.Random random = new System.Random();
         List<Point> randomOrder = i_points.OrderBy(item => random.Next()).ToList();
@@ -139,7 +144,7 @@ public class RoadBuilder
         return i_points.Except(pointsToDelete).ToList();
     }
 
-    private static IEnumerable<Triangle> GenerateTriangles(IEnumerable<Point> i_points)
+    private IEnumerable<Triangle> GenerateTriangles(IEnumerable<Point> i_points)
     {
         IEnumerable<Triangle> defaultTriangulation = m_triangulator.BowyerWatson(i_points);
         IEnumerable<Triangle> triangulation = defaultTriangulation.Where(triangle => 

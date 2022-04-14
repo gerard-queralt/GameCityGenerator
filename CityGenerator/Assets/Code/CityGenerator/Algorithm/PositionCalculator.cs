@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PositionCalculator
 {
-    public static Bounds ComputeBoundsOfGameObject(GameObject i_gameObject)
+    public Bounds ComputeBoundsOfGameObject(GameObject i_gameObject)
     {
         Bounds boundsOfElement = new Bounds(i_gameObject.transform.position, Vector3.one);
         MeshRenderer[] renderers = i_gameObject.GetComponentsInChildren<MeshRenderer>();
@@ -16,7 +16,7 @@ public class PositionCalculator
         return boundsOfElement;
     }
 
-    public static float FindGroundCoordinate(Vector3 i_startPosition, float i_minY)
+    public float FindGroundCoordinate(Vector3 i_startPosition, float i_minY)
     {
         Vector3 direction = Vector3.down;
         float maxDistance = i_startPosition.y - i_minY;
@@ -30,14 +30,14 @@ public class PositionCalculator
         return i_minY;
     }
 
-    public static bool CanElementBePlaced(Bounds i_boundingBox, Vector3 i_position, Quaternion i_rotation)
+    public bool CanElementBePlaced(Bounds i_boundingBox, Vector3 i_position, Quaternion i_rotation)
     {
         Vector3 halfExtends = i_boundingBox.extents;
         Vector3 center = i_position;
-        center.y += halfExtends.y;
+        center.y += halfExtends.y + 10f;
         LayerMask mask = LayerMask.GetMask("CityGenerator_TMPObjects");
         QueryTriggerInteraction queryTrigger = QueryTriggerInteraction.Ignore;
-        bool hitExistingCityObject = Physics.BoxCast(center, halfExtends, Vector3.down, i_rotation, halfExtends.y, mask, queryTrigger);
+        bool hitExistingCityObject = Physics.BoxCast(center, halfExtends, Vector3.down, i_rotation, halfExtends.y + 100f, mask, queryTrigger);
         return !hitExistingCityObject;
     }
 }

@@ -7,18 +7,21 @@ using System.Linq;
 
 public class ElementPlacer
 {
-    private static Dictionary<CityElement, uint> m_instanceCount = new Dictionary<CityElement, uint>();
+    private PositionCalculator m_positionCalculator;
+    private Bounds m_area;
+    private uint m_targetInhabitants;
+    private Dictionary<CityElement, uint> m_instanceCount = new Dictionary<CityElement, uint>();
+    private uint m_currentInhabitants = 0;
 
-    private static Bounds m_area;
-    private static uint m_targetInhabitants;
-    private static uint m_currentInhabitants;
-
-    public static HashSet<GameObject> PlaceElements(HashSet<CityElement> i_elements, HashSet<Road> i_roads, Bounds i_area, uint i_targetInhabitants)
+    public ElementPlacer(PositionCalculator i_positionCalculator, Bounds i_area, uint targetInhabitants)
     {
+        m_positionCalculator = i_positionCalculator;
         m_area = i_area;
-        m_targetInhabitants = i_targetInhabitants;
-        m_currentInhabitants = 0;
+        m_targetInhabitants = targetInhabitants;
+    }
 
+    public HashSet<GameObject> PlaceElements(HashSet<CityElement> i_elements, HashSet<Road> i_roads)
+    {
         HashSet<GameObject> instances = new HashSet<GameObject>();
         List<Road> roads = new List<Road>(i_roads);
         while (m_currentInhabitants < m_targetInhabitants)
@@ -55,7 +58,7 @@ public class ElementPlacer
         return instances;
     }
 
-    private static GameObject PlaceElement(CityElement i_element, Road i_road)
+    private GameObject PlaceElement(CityElement i_element, Road i_road)
     {
         GameObject prefab = i_element.prefab;
 
@@ -69,14 +72,14 @@ public class ElementPlacer
             }
         }
 
-        Vector3 position = ComputePositionInRoad(i_element, i_road, side);
+        Vector3 position = ComputePositionInRoad(i_element, i_road, side,);
         Quaternion rotation = i_road.rotation;
         if (side == LeftRight.Right)
         {
             rotation *= Quaternion.AngleAxis(180f, Vector3.up);
         }
 
-        if (PositionCalculator.CanElementBePlaced(i_element.boundingBox, position, rotation))
+        if (m_positionCalculator.CanElementBePlaced(i_element.boundingBox, position, rotation))
         {
             GameObject instance = GameObject.Instantiate(prefab, m_area.center, prefab.transform.rotation);
 
@@ -93,11 +96,10 @@ public class ElementPlacer
         return null;
     }
 
-    private static Vector3 ComputePositionInRoad(CityElement i_element, Road i_road, LeftRight i_side)
+    private Vector3 ComputePositionInRoad(CityElement i_element, Road i_road, LeftRight i_side, float delta)
     {
         Vector2 origin = i_road.start.AsVector2;
         Vector2 direction = i_road.direction;
-        float delta = i_road.GetDelta(i_side);
         float deltaElement = i_element.boundingBox.extents.x;
         delta += deltaElement;
         Vector2 perpendicular = i_road.perpendicular;
@@ -107,24 +109,24 @@ public class ElementPlacer
             width *= -1;
         }
         Vector2 positionInPlane = origin + direction * delta + perpendicular * width/2f;
-        float height = PositionCalculator.FindGroundCoordinate(new Vector3(positionInPlane.x, m_area.max.y, positionInPlane.y), m_area.min.y);
+        float height = m_positionCalculator.FindGroundCoordinate(new Vector3(positionInPlane.x, m_area.max.y, positionInPlane.y), m_area.min.y);
         Vector3 position = new Vector3(positionInPlane.x, height, positionInPlane.y);
         return position;
     }
 
-    private static Road ChooseRoad(List<Road> i_roads) //tmp
+    private Road ChooseRoad(List<Road> i_roads) //tmp
     {
         int index = Random.Range(0, i_roads.Count);
         return i_roads[index];
     }
 
-    private static LeftRight ChooseSide(Road i_road) //tmp
+    private LeftRight ChooseSide(Road i_road) //tmp
     {
         LeftRight random = (LeftRight)Random.Range(0, 2); //max is exclusive
         return random;
     }
 
-    private static void IncreaseInstanceCount(CityElement i_element)
+    private void IncreaseInstanceCount(CityElement i_element)
     {
         if(m_instanceCount.ContainsKey(i_element))
         {
@@ -136,7 +138,7 @@ public class ElementPlacer
         }
     }
 
-    private static void CreateTemporalCopyOfElementInstance(GameObject i_instance, Bounds i_boundingBox)
+    private void CreateTemporalCopyOfElementInstance(GameObject i_instance, Bounds i_boundingBox)
     {
         GameObject tmpCopy = GameObject.Instantiate(i_instance);
         tmpCopy.layer = LayerMask.NameToLayer("CityGenerator_TMPObjects");

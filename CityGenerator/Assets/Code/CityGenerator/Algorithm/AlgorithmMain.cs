@@ -42,16 +42,20 @@ public class AlgorithmMain : MonoBehaviour
         HashSet<Road> roads = new HashSet<Road>();
         roads.Add(road);
         roads.Add(road1);
-        
-        HashSet<GameObject> roadInstances = RoadBuilder.InstantiateRoads(roads, m_params.roadTexture, area);
-        HashSet<GameObject> elementInstances = ElementPlacer.PlaceElements(m_params.cityElements, roads, area, m_params.targetInhabitants);
+
+        PositionCalculator positionCalculator = new PositionCalculator();
+        ElementPlacer elementPlacer = new ElementPlacer(positionCalculator, area, m_params.targetInhabitants);
+        RoadBuilder roadBuilder = new RoadBuilder(positionCalculator);
+
+        HashSet<GameObject> roadInstances = roadBuilder.InstantiateRoads(roads, m_params.roadTexture, area);
+        HashSet<GameObject> elementInstances = elementPlacer.PlaceElements(m_params.cityElements, roads);
 
         CreateHierarchy(elementInstances, roadInstances);
 
         if (layerCreated)
         {
-            DestroyAllTmpObjects();
-            LayerCreator.DeleteLayer(m_tmpObjectsLayerName);
+            //DestroyAllTmpObjects();
+            //LayerCreator.DeleteLayer(m_tmpObjectsLayerName);
         }
     }
 
@@ -83,6 +87,7 @@ public class AlgorithmMain : MonoBehaviour
         {
             if(gameObject.layer == layer)
             {
+                //Debug.Log(LayerMask.GetMask(LayerMask.LayerToName(gameObject.layer)) + " original: " + LayerMask.GetMask(m_tmpObjectsLayerName));
                 Destroy(gameObject);
             }
         }

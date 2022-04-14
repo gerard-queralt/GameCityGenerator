@@ -113,7 +113,7 @@ public class Road
         }
     }
 
-    public bool CanBePlaced(LeftRight i_leftRight, Bounds i_bounds)
+    public bool CanBePlaced(LeftRight i_leftRight, Bounds i_bounds, float i_delta)
     {
         float sizeOfElement = i_bounds.size.x;
         float delta = GetDelta(i_leftRight) + sizeOfElement;

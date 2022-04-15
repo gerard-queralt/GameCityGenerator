@@ -5,7 +5,7 @@ using UnityEngine;
 public class CityGeneratorParameters : MonoBehaviour
 {
     [System.Serializable]
-    public struct CityElementAffinity
+    private struct CityElementAffinity
     {
         public CityElement elementA;
         public CityElement elementB;

@@ -39,7 +39,7 @@ public class AlgorithmMain : MonoBehaviour
         HashSet<Road> roads = roadBuilder.BuildRoads(m_params.roadWidthMin, m_params.roadWidthMax, m_params.nCrossroads, area);
 
         HashSet<GameObject> roadInstances = roadBuilder.InstantiateRoads(roads, m_params.roadTexture, area);
-        HashSet<GameObject> elementInstances = elementPlacer.PlaceElements(m_params.cityElements, roads);
+        HashSet<GameObject> elementInstances = elementPlacer.PlaceElements(m_params.cityElements, roads, m_params.affinities);
 
         CreateHierarchy(elementInstances, roadInstances);
 

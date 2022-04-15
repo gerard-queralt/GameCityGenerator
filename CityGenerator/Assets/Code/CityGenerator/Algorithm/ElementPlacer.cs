@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using static Road;
-using System.Linq;
+using static CityGeneratorParameters;
 
 public class ElementPlacer
 {
@@ -22,15 +22,18 @@ public class ElementPlacer
         public LeftRight side;
     }
 
-    public ElementPlacer(PositionCalculator i_positionCalculator, Bounds i_area, uint targetInhabitants)
+    public ElementPlacer(PositionCalculator i_positionCalculator, Bounds i_area, uint i_targetInhabitants)
     {
         m_positionCalculator = i_positionCalculator;
         m_area = i_area;
-        m_targetInhabitants = targetInhabitants;
+        m_targetInhabitants = i_targetInhabitants;
     }
 
-    public HashSet<GameObject> PlaceElements(HashSet<CityElement> i_elements, HashSet<Road> i_roads)
+    public HashSet<GameObject> PlaceElements(HashSet<CityElement> i_elements,
+                                             HashSet<Road> i_roads,
+                                             Dictionary<CityElementPair, float> i_affinities)
     {
+        ElementPositionSelector selector = new ElementPositionSelector(i_elements, i_affinities);
         HashSet<GameObject> instances = new HashSet<GameObject>();
         while (m_currentInhabitants < m_targetInhabitants)
         {
@@ -43,7 +46,7 @@ public class ElementPlacer
 
                     if (candidates.Count != 0)
                     {
-                        PositionAndRotation bestCandidate = FindBestCandidate(element, candidates);
+                        PositionAndRotation bestCandidate = FindBestCandidate(element, candidates, selector);
                         GameObject instance = PlaceElement(element, bestCandidate);
                         instances.Add(instance);
                         placedElementThisIteration = true;
@@ -99,10 +102,25 @@ public class ElementPlacer
         return candidates;
     }
 
-    private PositionAndRotation FindBestCandidate(CityElement i_element, List<PositionAndRotation> i_candidates) //TMP
+    private PositionAndRotation FindBestCandidate(CityElement i_element,
+                                                  List<PositionAndRotation> i_candidates,
+                                                  ElementPositionSelector i_selector)
     {
-        int index = Random.Range(0, i_candidates.Count);
-        return i_candidates[index];
+        int indexOfBest = -1;
+        int index = 0;
+        float heuristicOfBest = 0; //necessary initialization, but ignored the first iteration
+        foreach (PositionAndRotation candidate in i_candidates)
+        {
+            Vector3 position = candidate.position;
+            float heuristicOfCandidate = i_selector.ComputeHeuristic(i_element, position);
+            if (indexOfBest == -1 || heuristicOfBest < heuristicOfCandidate)
+            {
+                heuristicOfBest = heuristicOfCandidate;
+                indexOfBest = index;
+            }
+            ++index;
+        }
+        return i_candidates[indexOfBest];
     }
 
     private GameObject PlaceElement(CityElement i_element, PositionAndRotation i_positionAndRotation)
@@ -115,7 +133,7 @@ public class ElementPlacer
         m_currentInhabitants += i_element.inhabitants;
         IncreaseInstanceCount(i_element);
 
-        CreateTemporaryCollider(instance, i_element.boundingBox);
+        CreateTemporaryCollider(instance, i_element);
 
         i_positionAndRotation.road.IncreaseDelta(i_positionAndRotation.side, i_element.boundingBox);
 
@@ -152,12 +170,16 @@ public class ElementPlacer
         }
     }
 
-    private void CreateTemporaryCollider(GameObject i_instance, Bounds i_boundingBox)
+    private void CreateTemporaryCollider(GameObject i_instance, CityElement i_elementCreatedFrom)
     {
+        string name = i_elementCreatedFrom.name;
+        Bounds boundingBox = i_elementCreatedFrom.boundingBox;
+
         GameObject tmpObject = GameObject.Instantiate(i_instance);
+        tmpObject.name = name;
         tmpObject.layer = LayerMask.NameToLayer("CityGenerator_TMPObjects");
         BoxCollider collider = tmpObject.AddComponent<BoxCollider>();
-        collider.center = i_boundingBox.center;
-        collider.size = i_boundingBox.size;
+        collider.center = boundingBox.center;
+        collider.size = boundingBox.size;
     }
 }

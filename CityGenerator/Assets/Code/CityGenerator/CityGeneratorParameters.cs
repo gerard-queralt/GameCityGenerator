@@ -9,7 +9,7 @@ public class CityGeneratorParameters : MonoBehaviour
     {
         public CityElement elementA;
         public CityElement elementB;
-        [Range(0f, 1f)]public float affinity;
+        [Range(-1f, 1f)]public float affinity;
     }
 
     public struct CityElementPair
@@ -93,7 +93,7 @@ public class CityGeneratorParameters : MonoBehaviour
         {
             if(m_crossroads == 0)
             {
-                uint randomNumber = (uint) Mathf.RoundToInt(UnityEngine.Random.Range(0, /*tmp*/ 10));
+                uint randomNumber = (uint) Mathf.RoundToInt(Random.Range(0, /*tmp*/ 10));
                 return randomNumber;
             }
             return m_crossroads;

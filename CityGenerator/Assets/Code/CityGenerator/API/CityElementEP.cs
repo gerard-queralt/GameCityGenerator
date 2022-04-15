@@ -42,7 +42,7 @@ public class CityElementEP : CityElement
     {
         get
         {
-            return 0.5f;
+            return 0f;
         }
     }
 

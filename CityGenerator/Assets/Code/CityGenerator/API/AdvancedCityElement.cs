@@ -10,7 +10,7 @@ public class AdvancedCityElement : CityElement
     [SerializeField] uint m_inhabitants = 0;
     [SerializeField] bool m_setInstanceLimit = false;
     [SerializeField] uint m_instanceLimit = 0;
-    [Range(0f, 1f)][SerializeField] float m_defaultAffinity = 0.5f;
+    [Range(-1f, 1f)][SerializeField] float m_defaultAffinity = 0f;
 
     public override GameObject prefab
     {

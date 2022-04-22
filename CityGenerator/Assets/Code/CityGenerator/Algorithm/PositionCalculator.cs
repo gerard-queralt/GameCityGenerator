@@ -43,8 +43,8 @@ public class PositionCalculator
     {
         Vector3 halfExtends = i_boundingBox.extents;
         Vector3 center = i_position;
-        center.y += halfExtends.y + m_maxHeight;
         float heightOfElement = center.y + i_boundingBox.size.y;
+        center.y = heightOfElement + m_maxHeight;
         m_maxHeight = Mathf.Max(m_maxHeight, heightOfElement); //Update maximum height
         float maxDistance = Mathf.Abs(m_maxHeight - m_area.min.y);
         LayerMask mask = LayerMask.GetMask("CityGenerator_TMPObjects");

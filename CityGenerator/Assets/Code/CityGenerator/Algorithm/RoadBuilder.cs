@@ -89,15 +89,26 @@ public class RoadBuilder
         }
         planeMesh.uv = uvs;
 
-        //CreateTemporalCopyOfRoadInstance(plane);
+        CreateTemporaryCollider(plane);
 
         return plane;
     }
 
-    private void CreateTemporalCopyOfRoadInstance(GameObject i_instance)
+    private void CreateTemporaryCollider(GameObject i_instance)
     {
-        GameObject tmpCopy = GameObject.Instantiate(i_instance);
-        tmpCopy.layer = LayerMask.NameToLayer("CityGenerator_TMPObjects");
+        GameObject tmpObject = new GameObject();
+
+        tmpObject.transform.SetPositionAndRotation(i_instance.transform.position, i_instance.transform.rotation);
+
+        tmpObject.layer = LayerMask.NameToLayer("CityGenerator_TMPObjects");
+
+        Bounds boundingBox = i_instance.GetComponent<MeshCollider>().bounds;
+        Vector3 bbSize = boundingBox.size; //Default bounding box of the plane
+        bbSize = Vector3.Scale(bbSize, i_instance.transform.localScale); //Scaled to the proportions of the plane
+        bbSize.z *= 0.5f; //Reduced the Z axis (along which the elements will be placed) to allow some overlap
+        BoxCollider collider = tmpObject.AddComponent<BoxCollider>();
+        collider.center = boundingBox.center;
+        collider.size = bbSize;
     }
 
     private IEnumerable<Point> GenerateCrossroads(uint i_nCrossroads, Bounds i_cityArea)

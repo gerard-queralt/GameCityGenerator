@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: PokemonCenter
   m_EditorClassIdentifier: 
   m_prefab: {fileID: 6212229418027376189, guid: 80181325ef2083b45928895c48337ef7, type: 3}
+  m_sizeOfBox: {x: 0, y: 0, z: 0}
   m_inhabitants: 1
   m_setInstanceLimit: 1
   m_instanceLimit: 1
-  m_defaultAffinity: 0.5
+  m_defaultAffinity: 0

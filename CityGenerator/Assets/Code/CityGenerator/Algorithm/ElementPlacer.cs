@@ -12,6 +12,7 @@ public class ElementPlacer
     private uint m_targetInhabitants;
     private Dictionary<CityElement, uint> m_instanceCount = new Dictionary<CityElement, uint>();
     private uint m_currentInhabitants = 0;
+    private HashSet<CityElementInstance> m_placedElements = new HashSet<CityElementInstance>();
 
     private struct PositionAndRotation
     {
@@ -33,7 +34,7 @@ public class ElementPlacer
                                              HashSet<Road> i_roads,
                                              Dictionary<CityElementPair, float> i_affinities)
     {
-        ElementPositionSelector selector = new ElementPositionSelector(i_elements, i_affinities);
+        ElementPositionSelector selector = new ElementPositionSelector(i_affinities);
         HashSet<GameObject> instances = new HashSet<GameObject>();
         while (m_currentInhabitants < m_targetInhabitants)
         {
@@ -112,7 +113,7 @@ public class ElementPlacer
         foreach (PositionAndRotation candidate in i_candidates)
         {
             Vector3 position = candidate.position;
-            float heuristicOfCandidate = i_selector.ComputeHeuristic(i_element, position);
+            float heuristicOfCandidate = i_selector.ComputeHeuristic(i_element, position, m_placedElements);
             if (indexOfBest == -1 || heuristicOfBest < heuristicOfCandidate)
             {
                 heuristicOfBest = heuristicOfCandidate;
@@ -172,14 +173,24 @@ public class ElementPlacer
 
     private void CreateTemporaryCollider(GameObject i_instance, CityElement i_elementCreatedFrom)
     {
-        string name = i_elementCreatedFrom.name;
-        Bounds boundingBox = i_elementCreatedFrom.boundingBox;
-
-        GameObject tmpObject = GameObject.Instantiate(i_instance);
-        tmpObject.name = name;
+        GameObject tmpObject = new GameObject();
+        
+        tmpObject.transform.SetPositionAndRotation(i_instance.transform.position, i_instance.transform.rotation);
+        
         tmpObject.layer = LayerMask.NameToLayer("CityGenerator_TMPObjects");
+        
+        CityElementInstance elementInstance = tmpObject.AddComponent<CityElementInstance>();
+        elementInstance.m_element = i_elementCreatedFrom;
+        m_placedElements.Add(elementInstance);
+
+        Bounds boundingBox = i_elementCreatedFrom.boundingBox;
         BoxCollider collider = tmpObject.AddComponent<BoxCollider>();
         collider.center = boundingBox.center;
         collider.size = boundingBox.size;
+    }
+
+    public class CityElementInstance : MonoBehaviour
+    {
+        public CityElement m_element;
     }
 }

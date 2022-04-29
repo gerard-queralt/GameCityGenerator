@@ -70,9 +70,8 @@ public class ElementPlacer
     private bool ElementCanBeAdded(CityElement i_element)
     {
         bool instLimNotReached = InstanceLimitNotReached(i_element);
-        bool hasNoInhabitants = i_element.inhabitants == 0;
         bool addedInhNotOverLimit = m_currentInhabitants + i_element.inhabitants <= m_targetInhabitants;
-        return instLimNotReached && (hasNoInhabitants || addedInhNotOverLimit);
+        return instLimNotReached && addedInhNotOverLimit;
     }
 
     private bool InstanceLimitNotReached(CityElement i_element)

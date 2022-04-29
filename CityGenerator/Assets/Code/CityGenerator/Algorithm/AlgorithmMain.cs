@@ -4,22 +4,15 @@ using UnityEngine;
 
 using UnityEditor;
 
-[RequireComponent(typeof(CityGeneratorParameters))]
-public class AlgorithmMain : MonoBehaviour
+public class AlgorithmMain
 {
     CityGeneratorParameters m_params;
 
     private string m_tmpObjectsLayerName = "CityGenerator_TMPObjects";
 
-    private void Awake()
+    public AlgorithmMain(CityGeneratorParameters i_params)
     {
-        m_params = GetComponent<CityGeneratorParameters>();
-        Debug.Assert(m_params != null, "CityGeneratorParameters not found");
-    }
-
-    private void Start()
-    {
-        Run(); //tmp
+        m_params = i_params;
     }
 
     public void Run()
@@ -72,13 +65,13 @@ public class AlgorithmMain : MonoBehaviour
 
     private void DestroyAllTmpObjects()
     {
-        GameObject[] allObjects = FindObjectsOfType<GameObject>();
+        GameObject[] allObjects = GameObject.FindObjectsOfType<GameObject>();
         int layer = LayerMask.NameToLayer(m_tmpObjectsLayerName);
         foreach (GameObject gameObject in allObjects)
         {
             if(gameObject.layer == layer)
             {
-                Destroy(gameObject);
+                GameObject.DestroyImmediate(gameObject);
             }
         }
     }

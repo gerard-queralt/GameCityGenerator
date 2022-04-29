@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Graveyard
   m_EditorClassIdentifier: 
   m_prefab: {fileID: 5771586569010208816, guid: beb8799576b10794f8b7c71c3783148b, type: 3}
-  m_numberInstances: 6
+  m_instanceLimit: 6

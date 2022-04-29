@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CityGeneratorParameters : MonoBehaviour
+public class CityGeneratorParameters
 {
     [System.Serializable]
-    private struct CityElementAffinity
+    public struct CityElementAffinity
     {
         public CityElement elementA;
         public CityElement elementB;
@@ -18,18 +18,14 @@ public class CityGeneratorParameters : MonoBehaviour
         public CityElement second;
     }
 
-    [SerializeField] uint m_targetInhabitants;
-    [SerializeField] Vector3 m_areaCenter;
-    [SerializeField] Vector3 m_areaSize;
+    private uint m_targetInhabitants;
     private Bounds m_area;
-    [SerializeField] CityElement[] m_cityElements;
-    private HashSet<CityElement> m_elementsSet;
-    [SerializeField] CityElementAffinity[] m_affinities;
-    private Dictionary<CityElementPair, float> m_affinitiesDict;
-    [SerializeField] Texture m_roadTexture;
-    [SerializeField] float m_roadWidthMin;
-    [SerializeField] float m_roadWidthMax;
-    [SerializeField] uint m_crossroads;
+    private HashSet<CityElement> m_elements;
+    private Dictionary<CityElementPair, float> m_affinities;
+    private Texture m_roadTexture;
+    private float m_roadWidthMin;
+    private float m_roadWidthMax;
+    private uint m_crossroads;
 
     public uint targetInhabitants
     {
@@ -51,7 +47,7 @@ public class CityGeneratorParameters : MonoBehaviour
     {
         get
         {
-            return m_elementsSet;
+            return m_elements;
         }
     }
 
@@ -59,7 +55,7 @@ public class CityGeneratorParameters : MonoBehaviour
     {
         get
         {
-            return m_affinitiesDict;
+            return m_affinities;
         }
     }
 
@@ -100,42 +96,53 @@ public class CityGeneratorParameters : MonoBehaviour
         }
     }
 
-    private void Awake()
+    public CityGeneratorParameters(uint i_targetInhabitants,
+                                   Bounds i_area,
+                                   CityElement[] i_cityElements,
+                                   CityElementAffinity[] i_affinities,
+                                   Texture i_roadTexture,
+                                   float i_roadWidthMin,
+                                   float i_roadWidthMax,
+                                   uint i_crossroads)
     {
-        Debug.Assert(m_cityElements.Length > 0, "No CityElements set");
-        m_area = new Bounds(m_areaCenter, m_areaSize);
-        m_elementsSet = new HashSet<CityElement>(m_cityElements);
-        PopulateDictionary();
-        Debug.Assert(m_roadTexture != null, "Road texture not set");
+        m_targetInhabitants = i_targetInhabitants;
+        m_area = i_area;
+        m_elements = new HashSet<CityElement>(i_cityElements);
+        m_affinities = PopulateDictionary(i_affinities);
+        m_roadTexture = i_roadTexture;
+        m_roadWidthMin = i_roadWidthMin;
+        m_roadWidthMax = i_roadWidthMax;
+        m_crossroads = i_crossroads;
     }
 
-    private void PopulateDictionary()
+    private Dictionary<CityElementPair, float> PopulateDictionary(CityElementAffinity[] i_affinities)
     {
-        m_affinitiesDict = new Dictionary<CityElementPair, float>();
+        Dictionary<CityElementPair, float>  affinities = new Dictionary<CityElementPair, float>();
         int index = 0; //Used to give better warnings
-        foreach (CityElementAffinity affinity in m_affinities)
+        foreach (CityElementAffinity affinity in i_affinities)
         {
             Debug.Assert(affinity.elementA != null, "Element A not set in affinity " + index);
             Debug.Assert(affinity.elementB != null, "Element B not set in affinity " + index);
             if (affinity.elementA && affinity.elementB)
             {
-                Debug.Assert(m_elementsSet.Contains(affinity.elementA),
+                Debug.Assert(m_elements.Contains(affinity.elementA),
                                 "Element A [" + affinity.elementA.name + "] is not an element of the City, so this affinity will have no effect");
-                Debug.Assert(m_elementsSet.Contains(affinity.elementB),
+                Debug.Assert(m_elements.Contains(affinity.elementB),
                                 "Element B [" + affinity.elementB.name + "] is not an element of the City, so this affinity will have no effect");
                 
                 CityElementPair pair = new CityElementPair { first = affinity.elementA, second = affinity.elementB };
                 
-                bool affinityNotSet = !m_affinitiesDict.ContainsKey(pair) 
-                                && !m_affinitiesDict.ContainsKey(new CityElementPair { first = affinity.elementB, second = affinity.elementA });
+                bool affinityNotSet = !affinities.ContainsKey(pair) 
+                                && !affinities.ContainsKey(new CityElementPair { first = affinity.elementB, second = affinity.elementA });
                 Debug.Assert(affinityNotSet,
                                 "Affinity between Elements " + affinity.elementA.name + " and " + affinity.elementB.name + " already defined");
                 if (affinityNotSet)
                 {
-                    m_affinitiesDict.Add(pair, affinity.affinity);
+                    affinities.Add(pair, affinity.affinity);
                 }
             }
             index++;
         }
+        return affinities;
     }
 }

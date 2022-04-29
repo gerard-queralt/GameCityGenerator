@@ -78,8 +78,15 @@ public class RoadBuilder
         plane.transform.rotation = i_road.rotation;
 
         Renderer planeRenderer = plane.GetComponent<Renderer>();
-        planeRenderer.material.mainTexture = i_roadTexture;
-        Mesh planeMesh = plane.GetComponent<MeshFilter>().mesh;
+
+        Material tmpMaterial = new Material(planeRenderer.sharedMaterial);
+        tmpMaterial.mainTexture = i_roadTexture;
+        planeRenderer.sharedMaterial = tmpMaterial;
+
+        MeshFilter meshFilter = plane.GetComponent<MeshFilter>();
+        Mesh planeMesh = GameObject.Instantiate(meshFilter.sharedMesh);
+        meshFilter.mesh = planeMesh;
+        
         Vector3[] vertices = planeMesh.vertices;
         Vector2[] uvs = new Vector2[vertices.Length];
         for (int i = 0; i < uvs.Length; i++)

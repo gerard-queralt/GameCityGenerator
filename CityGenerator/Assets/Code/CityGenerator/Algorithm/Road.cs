@@ -10,8 +10,6 @@ public class Road
     private Crossroad m_end;
     private Quaternion m_rotation;
     private float m_width;
-    private float m_deltaLeftX = 0f;
-    private float m_deltaRightX = 0f;
 
     public enum LeftRight
     {
@@ -90,28 +88,6 @@ public class Road
         Vector2 vectorFromStartToEnd = m_start.AsVector2 - m_end.AsVector2;
         float angle = Vector2.SignedAngle(vectorFromStartToEnd, Vector2.right);
         m_rotation = Quaternion.AngleAxis(angle, Vector3.up);
-    }
-
-    public float GetDelta(LeftRight i_leftRight)
-    {
-        if(i_leftRight == LeftRight.Left)
-        {
-            return m_deltaLeftX;
-        }
-        return m_deltaRightX;
-    }
-
-    public void IncreaseDelta(LeftRight i_leftRight, Bounds i_bounds)
-    {
-        float delta = i_bounds.size.x;
-        if (i_leftRight == LeftRight.Left)
-        {
-            m_deltaLeftX += delta;
-        }
-        else
-        {
-            m_deltaRightX += delta;
-        }
     }
 
     public bool CanBePlaced(LeftRight i_leftRight, Bounds i_bounds, float i_delta)

@@ -18,9 +18,6 @@ public class ElementPlacer
     {
         public Vector3 position;
         public Quaternion rotation;
-        //Necessary to increase the road's delta
-        public Road road;
-        public LeftRight side;
     }
 
     public ElementPlacer(PositionCalculator i_positionCalculator, Bounds i_area, uint i_targetInhabitants)
@@ -74,7 +71,7 @@ public class ElementPlacer
         {
             foreach (LeftRight side in System.Enum.GetValues(typeof(LeftRight)))
             {
-                float delta = road.GetDelta(side);
+                float delta = 0f;
                 while (road.CanBePlaced(side, i_element.boundingBox, delta))
                 {
                     Vector3 position = ComputePositionInRoad(i_element, road, side, delta);
@@ -89,12 +86,9 @@ public class ElementPlacer
                         PositionAndRotation candidate = new PositionAndRotation
                         {
                             position = position,
-                            rotation = rotation,
-                            road = road,
-                            side = side
+                            rotation = rotation
                         };
                         candidates.Add(candidate);
-                        break;
                     }
                     delta += 0.1f;
                 }
@@ -135,8 +129,6 @@ public class ElementPlacer
         IncreaseInstanceCount(i_element);
 
         CreateTemporaryCollider(instance, i_element);
-
-        i_positionAndRotation.road.IncreaseDelta(i_positionAndRotation.side, i_element.boundingBox);
 
         return instance;
     }

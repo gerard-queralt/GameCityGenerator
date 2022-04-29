@@ -416,7 +416,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 453f02dd0283eb44a992b9e6b667db92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_targetInhabitants: 500
+  m_targetInhabitants: 4
   m_areaCenter: {x: 0, y: 10, z: 0}
   m_areaSize: {x: 50, y: 20, z: 50}
   m_cityElements:

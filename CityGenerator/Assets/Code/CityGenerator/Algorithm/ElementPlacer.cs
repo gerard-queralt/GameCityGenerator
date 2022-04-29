@@ -2,8 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using System.Linq;
+
 using static Road;
 using static CityGeneratorParameters;
+using System;
 
 public class ElementPlacer
 {
@@ -33,12 +36,12 @@ public class ElementPlacer
     {
         ElementPositionSelector selector = new ElementPositionSelector(i_affinities);
         HashSet<GameObject> instances = new HashSet<GameObject>();
-        while (m_currentInhabitants < m_targetInhabitants)
+        while (i_elements.Select(e => ElementCanBeAdded(e)).Any(b => b == true)) //while exists an element that can be added
         {
             bool placedElementThisIteration = false;
             foreach (CityElement element in i_elements)
             {
-                if (m_currentInhabitants + element.inhabitants <= m_targetInhabitants)
+                if (ElementCanBeAdded(element))
                 {
                     List<PositionAndRotation> candidates = FindPositionCandidates(element, i_roads);
 
@@ -62,6 +65,27 @@ public class ElementPlacer
             }
         }
         return instances;
+    }
+
+    private bool ElementCanBeAdded(CityElement i_element)
+    {
+        bool instLimNotReached = InstanceLimitNotReached(i_element);
+        bool hasNoInhabitants = i_element.inhabitants == 0;
+        bool addedInhNotOverLimit = m_currentInhabitants + i_element.inhabitants <= m_targetInhabitants;
+        return instLimNotReached && (hasNoInhabitants || addedInhNotOverLimit);
+    }
+
+    private bool InstanceLimitNotReached(CityElement i_element)
+    {
+        if (i_element.instanceLimit == null)
+        {
+            return true;
+        }
+        if (m_instanceCount.TryGetValue(i_element, out uint currentInstances))
+        {
+            return currentInstances < i_element.instanceLimit;
+        }
+        return true;
     }
 
     private List<PositionAndRotation> FindPositionCandidates(CityElement i_element, HashSet<Road> i_roads)

@@ -26,6 +26,7 @@ public class CityGeneratorParameters
     private float m_roadWidthMin;
     private float m_roadWidthMax;
     private uint m_crossroads;
+    private HeuristicCalculator m_heuristic;
 
     public uint targetInhabitants
     {
@@ -96,6 +97,14 @@ public class CityGeneratorParameters
         }
     }
 
+    public HeuristicCalculator heuristic
+    {
+        get
+        {
+            return m_heuristic;
+        }
+    }
+
     public CityGeneratorParameters(uint i_targetInhabitants,
                                    Bounds i_area,
                                    CityElement[] i_cityElements,
@@ -103,7 +112,8 @@ public class CityGeneratorParameters
                                    Texture i_roadTexture,
                                    float i_roadWidthMin,
                                    float i_roadWidthMax,
-                                   uint i_crossroads)
+                                   uint i_crossroads,
+                                   System.Type i_heuristicType)
     {
         m_targetInhabitants = i_targetInhabitants;
         m_area = i_area;
@@ -113,6 +123,19 @@ public class CityGeneratorParameters
         m_roadWidthMin = i_roadWidthMin;
         m_roadWidthMax = i_roadWidthMax;
         m_crossroads = i_crossroads;
+        if (i_heuristicType != null && typeof(HeuristicCalculator).IsAssignableFrom(i_heuristicType) && !i_heuristicType.IsAbstract)
+        {
+            System.Type[] contructorParameterTypes = new System.Type[1];
+            contructorParameterTypes[0] = m_affinities.GetType();
+            System.Reflection.ConstructorInfo constructor = i_heuristicType.GetConstructor(contructorParameterTypes);
+            System.Object[] constructorParameters = new System.Object[1];
+            constructorParameters[0] = m_affinities;
+            m_heuristic = (HeuristicCalculator)constructor.Invoke(constructorParameters);
+        }
+        else
+        {
+            m_heuristic = new DefaultHeuristic(m_affinities);
+        }
     }
 
     private Dictionary<CityElementPair, float> PopulateDictionary(CityElementAffinity[] i_affinities)

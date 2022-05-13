@@ -8,11 +8,13 @@ using static ElementPlacer;
 
 public class ElementPositionSelector
 {
-    private Dictionary<CityElementPair, float> m_affinities;
+    private Dictionary<CityElementPair, float> m_affinities; //left here for now
+    private HeuristicCalculator m_heuristic;
 
-    public ElementPositionSelector(Dictionary<CityElementPair, float> i_affinities)
+    public ElementPositionSelector(Dictionary<CityElementPair, float> i_affinities, HeuristicCalculator i_heuristic)
     {
         m_affinities = i_affinities;
+        m_heuristic = i_heuristic;
     }
 
     public float ComputeHeuristic(CityElement i_element, Vector3 i_position, HashSet<CityElementInstance> i_placedElements)
@@ -20,33 +22,8 @@ public class ElementPositionSelector
         float heuristic = 0;
         foreach (CityElementInstance neighbour in i_placedElements)
         {
-            float affinity = AffinityBetween(i_element, neighbour.m_element);
-            float distance = Vector3.Distance(i_position, neighbour.transform.position);
-            heuristic += affinity * 1 / distance;
+            heuristic += m_heuristic.Calculate(i_element, i_position, neighbour);
         }
         return heuristic;
-    }
-
-    private float AffinityBetween(CityElement i_element, CityElement i_neighbour)
-    {
-        CityElementPair pair = new CityElementPair
-        {
-            first = i_element,
-            second = i_neighbour
-        };
-        if (m_affinities.ContainsKey(pair))
-        {
-            return m_affinities[pair];
-        }
-        pair = new CityElementPair //reversed
-        {
-            first = i_neighbour,
-            second = i_element
-        };
-        if (m_affinities.ContainsKey(pair))
-        {
-            return m_affinities[pair];
-        }
-        return i_element.defaultAffinity + i_neighbour.defaultAffinity;
     }
 }

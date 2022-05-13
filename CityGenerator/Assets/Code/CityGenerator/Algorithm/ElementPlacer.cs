@@ -32,9 +32,10 @@ public class ElementPlacer
 
     public HashSet<GameObject> PlaceElements(HashSet<CityElement> i_elements,
                                              HashSet<Road> i_roads,
-                                             Dictionary<CityElementPair, float> i_affinities)
+                                             Dictionary<CityElementPair, float> i_affinities,
+                                             HeuristicCalculator i_heuristic)
     {
-        ElementPositionSelector selector = new ElementPositionSelector(i_affinities);
+        ElementPositionSelector selector = new ElementPositionSelector(i_affinities, i_heuristic);
         HashSet<GameObject> instances = new HashSet<GameObject>();
         while (i_elements.Select(e => ElementCanBeAdded(e)).Any(b => b == true)) //while exists an element that can be added
         {

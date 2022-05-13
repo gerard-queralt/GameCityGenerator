@@ -14,6 +14,7 @@ public class CityGeneratorMenu : EditorWindow
     [SerializeField] int m_targetInhabitants;
     [SerializeField] Bounds m_area;
     [SerializeField] public CityElement[] m_cityElements;
+    [SerializeField] public Type m_heuristic /*tmp*/ = typeof(DefaultHeuristic);
     [SerializeField] public CityElementAffinity[] m_affinities;
     [SerializeField] Texture m_roadTexture;
     [SerializeField] float m_roadWidthMin;
@@ -75,7 +76,8 @@ public class CityGeneratorMenu : EditorWindow
                                                                              m_roadTexture,
                                                                              m_roadWidthMin,
                                                                              m_roadWidthMax,
-                                                                             (uint)m_crossroads);
+                                                                             (uint)m_crossroads,
+                                                                             m_heuristic);
             AlgorithmMain algorithmMain = new AlgorithmMain(cityParams);
             algorithmMain.Run();
         }

@@ -32,7 +32,7 @@ public class AlgorithmMain
         HashSet<Road> roads = roadBuilder.BuildRoads(m_params.roadWidthMin, m_params.roadWidthMax, m_params.nCrossroads, area);
 
         HashSet<GameObject> roadInstances = roadBuilder.InstantiateRoads(roads, m_params.roadTexture, area);
-        HashSet<GameObject> elementInstances = elementPlacer.PlaceElements(m_params.cityElements, roads, m_params.affinities);
+        HashSet<GameObject> elementInstances = elementPlacer.PlaceElements(m_params.cityElements, roads, m_params.affinities, m_params.heuristic);
 
         CreateHierarchy(elementInstances, roadInstances);
 

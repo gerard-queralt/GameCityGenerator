@@ -14,7 +14,7 @@ public class CityGeneratorMenu : EditorWindow
     [SerializeField] int m_targetInhabitants;
     [SerializeField] Bounds m_area;
     [SerializeField] public CityElement[] m_cityElements;
-    [SerializeField] public Type m_heuristic /*tmp*/ = typeof(DefaultHeuristic);
+    [SerializeField] public HeuristicCalculator m_heuristic;
     [SerializeField] public CityElementAffinity[] m_affinities;
     [SerializeField] Texture m_roadTexture;
     [SerializeField] float m_roadWidthMin;
@@ -51,6 +51,9 @@ public class CityGeneratorMenu : EditorWindow
         
         SerializedProperty serializedElements = so.FindProperty("m_cityElements");
         EditorGUILayout.PropertyField(serializedElements, true);
+
+        SerializedProperty serializedHeuristic = so.FindProperty("m_heuristic");
+        EditorGUILayout.PropertyField(serializedHeuristic, true);
 
         SerializedProperty serializedAffinities = so.FindProperty("m_affinities");
         EditorGUILayout.PropertyField(serializedAffinities, true);

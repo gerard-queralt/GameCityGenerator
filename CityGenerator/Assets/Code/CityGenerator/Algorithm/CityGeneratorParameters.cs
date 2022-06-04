@@ -113,7 +113,7 @@ public class CityGeneratorParameters
                                    float i_roadWidthMin,
                                    float i_roadWidthMax,
                                    uint i_crossroads,
-                                   System.Type i_heuristicType)
+                                   HeuristicCalculator i_heuristic)
     {
         m_targetInhabitants = i_targetInhabitants;
         m_area = i_area;
@@ -123,18 +123,13 @@ public class CityGeneratorParameters
         m_roadWidthMin = i_roadWidthMin;
         m_roadWidthMax = i_roadWidthMax;
         m_crossroads = i_crossroads;
-        if (i_heuristicType != null && typeof(HeuristicCalculator).IsAssignableFrom(i_heuristicType) && !i_heuristicType.IsAbstract)
+        if (i_heuristic != null)
         {
-            System.Type[] contructorParameterTypes = new System.Type[1];
-            contructorParameterTypes[0] = m_affinities.GetType();
-            System.Reflection.ConstructorInfo constructor = i_heuristicType.GetConstructor(contructorParameterTypes);
-            System.Object[] constructorParameters = new System.Object[1];
-            constructorParameters[0] = m_affinities;
-            m_heuristic = (HeuristicCalculator)constructor.Invoke(constructorParameters);
+            m_heuristic = i_heuristic;
         }
         else
         {
-            m_heuristic = new DefaultHeuristic(m_affinities);
+            m_heuristic = ScriptableObject.CreateInstance<DefaultHeuristic>();
         }
     }
 

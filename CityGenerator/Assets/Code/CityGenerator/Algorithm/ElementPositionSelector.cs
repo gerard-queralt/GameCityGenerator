@@ -22,7 +22,7 @@ public class ElementPositionSelector
         float heuristic = 0;
         foreach (CityElementInstance neighbour in i_placedElements)
         {
-            heuristic += m_heuristic.Calculate(i_element, i_position, neighbour);
+            heuristic += m_heuristic.Calculate(i_element, i_position, neighbour, m_affinities);
         }
         return heuristic;
     }

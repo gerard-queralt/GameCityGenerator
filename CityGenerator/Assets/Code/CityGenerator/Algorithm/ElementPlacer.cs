@@ -11,7 +11,7 @@ using System;
 public class ElementPlacer
 {
     private PositionCalculator m_positionCalculator;
-    private Bounds m_area;
+    private Bounds m_districtArea;
     private uint m_targetInhabitants;
     private Dictionary<CityElement, uint> m_instanceCount = new Dictionary<CityElement, uint>();
     private uint m_currentInhabitants = 0;
@@ -23,10 +23,10 @@ public class ElementPlacer
         public Quaternion rotation;
     }
 
-    public ElementPlacer(PositionCalculator i_positionCalculator, Bounds i_area, uint i_targetInhabitants)
+    public ElementPlacer(PositionCalculator i_positionCalculator, Bounds i_districtArea, uint i_targetInhabitants)
     {
         m_positionCalculator = i_positionCalculator;
-        m_area = i_area;
+        m_districtArea = i_districtArea;
         m_targetInhabitants = i_targetInhabitants;
     }
 
@@ -145,7 +145,7 @@ public class ElementPlacer
     private GameObject PlaceElement(CityElement i_element, PositionAndRotation i_positionAndRotation)
     {
         GameObject prefab = i_element.prefab;
-        GameObject instance = GameObject.Instantiate(prefab, m_area.center, prefab.transform.rotation);
+        GameObject instance = GameObject.Instantiate(prefab, m_districtArea.center, prefab.transform.rotation);
 
         instance.transform.SetPositionAndRotation(i_positionAndRotation.position, i_positionAndRotation.rotation);
 
@@ -170,7 +170,7 @@ public class ElementPlacer
             width *= -1;
         }
         Vector2 positionInPlane = origin + direction * i_delta + perpendicular * width/2f;
-        float height = m_positionCalculator.FindGroundCoordinate(new Vector3(positionInPlane.x, m_area.max.y, positionInPlane.y));
+        float height = m_positionCalculator.FindGroundCoordinate(new Vector3(positionInPlane.x, m_districtArea.max.y, positionInPlane.y));
         Vector3 position = new Vector3(positionInPlane.x, height, positionInPlane.y);
         return position;
     }

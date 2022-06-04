@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class PositionCalculator
 {
-    private Bounds m_area;
+    private Bounds m_districtArea;
     private float m_maxHeight = 0;
 
-    public PositionCalculator(Bounds i_area)
+    public PositionCalculator(Bounds i_districtArea)
     {
-        m_area = i_area;
+        m_districtArea = i_districtArea;
     }
 
     public static Bounds ComputeBoundsOfGameObject(GameObject i_gameObject)
@@ -27,7 +27,7 @@ public class PositionCalculator
     public float FindGroundCoordinate(Vector3 i_startPosition)
     {
         Vector3 direction = Vector3.down;
-        float minY = m_area.min.y;
+        float minY = m_districtArea.min.y;
         float maxDistance = i_startPosition.y - minY;
         LayerMask mask = LayerMask.GetMask("Default");
         QueryTriggerInteraction queryTrigger = QueryTriggerInteraction.Ignore;
@@ -46,7 +46,7 @@ public class PositionCalculator
         float heightOfElement = center.y + i_boundingBox.size.y;
         center.y = heightOfElement + m_maxHeight;
         m_maxHeight = Mathf.Max(m_maxHeight, heightOfElement); //Update maximum height
-        float maxDistance = Mathf.Abs(m_maxHeight - m_area.min.y);
+        float maxDistance = Mathf.Abs(m_maxHeight - m_districtArea.min.y);
         LayerMask mask = LayerMask.GetMask("CityGenerator_TMPObjects");
         QueryTriggerInteraction queryTrigger = QueryTriggerInteraction.Ignore;
         bool hitExistingCityObject = Physics.BoxCast(center, halfExtends, Vector3.down, i_rotation, maxDistance, mask, queryTrigger);

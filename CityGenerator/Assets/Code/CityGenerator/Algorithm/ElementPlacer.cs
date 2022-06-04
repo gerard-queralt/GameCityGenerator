@@ -204,9 +204,4 @@ public class ElementPlacer
         collider.center = boundingBox.center;
         collider.size = boundingBox.size;
     }
-
-    public class CityElementInstance : MonoBehaviour
-    {
-        public CityElement m_element;
-    }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using static CityGeneratorParameters;
-using static ElementPlacer;
 
 public abstract class HeuristicCalculator : ScriptableObject
 {

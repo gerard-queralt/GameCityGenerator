@@ -6,7 +6,7 @@ public class DefaultHeuristic : HeuristicCalculator
 {
     public override float Calculate(CityElement i_element,
                                     Vector3 i_position,
-                                    ElementPlacer.CityElementInstance i_placedElement,
+                                    CityElementInstance i_placedElement,
                                     Dictionary<CityGeneratorParameters.CityElementPair, float> i_affinities)
     {
         float affinity = AffinityBetween(i_element, i_placedElement.m_element, i_affinities);

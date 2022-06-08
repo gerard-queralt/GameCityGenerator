@@ -114,7 +114,7 @@ public class RoadBuilder
         Bounds boundingBox = i_instance.GetComponent<MeshCollider>().bounds;
         Vector3 bbSize = boundingBox.size; //Default bounding box of the plane
         bbSize = Vector3.Scale(bbSize, i_instance.transform.localScale); //Scaled to the proportions of the plane
-        bbSize.z *= 0.25f; //Reduced the Z axis (along which the elements will be placed) to allow some overlap
+        bbSize.z *= 0.5f; //Reduced the Z axis (along which the elements will be placed) to allow some overlap
         BoxCollider collider = tmpObject.AddComponent<BoxCollider>();
         collider.center = boundingBox.center;
         collider.size = bbSize;

@@ -43,13 +43,10 @@ public class PositionCalculator
     {
         Vector3 halfExtends = i_boundingBox.extents;
         Vector3 center = i_position;
-        float heightOfElement = center.y + i_boundingBox.size.y;
-        center.y = heightOfElement + m_maxHeight;
-        m_maxHeight = Mathf.Max(m_maxHeight, heightOfElement); //Update maximum height
-        float maxDistance = Mathf.Abs(m_maxHeight - m_districtArea.min.y);
+        center.y += halfExtends.y;
         LayerMask mask = LayerMask.GetMask("CityGenerator_TMPObjects");
         QueryTriggerInteraction queryTrigger = QueryTriggerInteraction.Ignore;
-        bool hitExistingCityObject = Physics.BoxCast(center, halfExtends, Vector3.down, i_rotation, maxDistance, mask, queryTrigger);
-        return !hitExistingCityObject;
+        Collider[] overlapped = Physics.OverlapBox(center, halfExtends, i_rotation, mask, queryTrigger);
+        return overlapped.Length == 0;
     }
 }

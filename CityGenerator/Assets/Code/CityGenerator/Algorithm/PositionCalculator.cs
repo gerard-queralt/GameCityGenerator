@@ -5,7 +5,6 @@ using UnityEngine;
 public class PositionCalculator
 {
     private Bounds m_districtArea;
-    private float m_maxHeight = 0;
 
     public PositionCalculator(Bounds i_districtArea)
     {

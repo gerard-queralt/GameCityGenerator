@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using UnityEditor;
+using System;
 
 public class AlgorithmMain
 {
@@ -24,6 +25,7 @@ public class AlgorithmMain
         }
 
         HashSet<District> districts = m_params.districts;
+        HashSet<GameObject> districtObjects = new HashSet<GameObject>();
         foreach (District district in districts)
         {
             Bounds area = district.area;
@@ -36,9 +38,12 @@ public class AlgorithmMain
 
             HashSet<GameObject> roadInstances = roadBuilder.InstantiateRoads(roads, district.roadTexture);
             HashSet<GameObject> elementInstances = elementPlacer.PlaceElements(district.cityElements, roads, m_params.affinities, m_params.heuristic);
+
+            GameObject districtObject = CreateDistrictHierarchy(elementInstances, roadInstances);
+            districtObjects.Add(districtObject);
         }
 
-        //CreateHierarchy(elementInstances, roadInstances);
+        CreateCityHierarchy(districtObjects);
 
         if (layerCreated)
         {
@@ -47,14 +52,14 @@ public class AlgorithmMain
         }
     }
 
-    private void CreateHierarchy(HashSet<GameObject> i_elements, HashSet<GameObject> i_roads)
+    private GameObject CreateDistrictHierarchy(HashSet<GameObject> i_elements, HashSet<GameObject> i_roads)
     {
-        Transform cityParent = new GameObject("City").transform;
+        Transform districtParent = new GameObject("District").transform;
         Transform elementParent = new GameObject("Elements").transform;
         Transform roadParent = new GameObject("Roads").transform;
 
-        elementParent.SetParent(cityParent);
-        roadParent.SetParent(cityParent);
+        elementParent.SetParent(districtParent);
+        roadParent.SetParent(districtParent);
 
         foreach(GameObject element in i_elements)
         {
@@ -64,6 +69,18 @@ public class AlgorithmMain
         foreach(GameObject road in i_roads)
         {
             road.transform.SetParent(roadParent);
+        }
+
+        return districtParent.gameObject;
+    }
+
+    private void CreateCityHierarchy(HashSet<GameObject> i_districts)
+    {
+        Transform cityParent = new GameObject("City").transform;
+        cityParent.SetParent(m_params.gameObject.transform);
+        foreach (GameObject district in i_districts)
+        {
+            district.transform.SetParent(cityParent);
         }
     }
 

@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 0
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40fd6d9f3e9ac9644aad553b05549b30, type: 3}
+  m_Script: {fileID: 11500000, guid: 565c87ebf4f0e9840ad02dc8d4421a09, type: 3}
   m_Name: Graveyard
   m_EditorClassIdentifier: 
   m_prefab: {fileID: 5771586569010208816, guid: beb8799576b10794f8b7c71c3783148b, type: 3}

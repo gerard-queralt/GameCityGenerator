@@ -7,8 +7,8 @@ public class District
 {
     [SerializeField] uint m_targetInhabitants;
     [SerializeField] Bounds m_area;
-    [SerializeField] CityElement[] m_elementsArray;
-    private HashSet<CityElement> m_elements;
+    [SerializeField] CityElement[] m_elements;
+    private HashSet<CityElement> m_elementsSet;
     [SerializeField] Texture m_roadTexture;
     [SerializeField] float m_roadWidthMin;
     [SerializeField] float m_roadWidthMax;
@@ -34,7 +34,7 @@ public class District
     {
         get
         {
-            return m_elements;
+            return m_elementsSet;
         }
     }
 
@@ -77,6 +77,6 @@ public class District
 
     public void CreateElementsSet()
     {
-        m_elements = new HashSet<CityElement>(m_elementsArray);
+        m_elementsSet = new HashSet<CityElement>(m_elements);
     }
 }

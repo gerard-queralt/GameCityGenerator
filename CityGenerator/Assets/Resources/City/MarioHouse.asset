@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7e872e70170a7ea4c937e4091cbb53f1, type: 3}
+  m_Script: {fileID: 11500000, guid: 9ffcf8cca2b16b340820c51ed25992dc, type: 3}
   m_Name: MarioHouse
   m_EditorClassIdentifier: 
   m_prefab: {fileID: 2185422660654337867, guid: 86cbaefd47c88824fa57e8306a0fabc9, type: 3}

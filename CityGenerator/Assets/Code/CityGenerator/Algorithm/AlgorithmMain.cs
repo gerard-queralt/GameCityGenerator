@@ -1,13 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using UnityEditor;
-using System;
-
 public class AlgorithmMain
 {
-    City m_params;
+    private City m_params;
 
     private string m_tmpObjectsLayerName = "CityGenerator_TMPObjects";
 
@@ -61,12 +57,12 @@ public class AlgorithmMain
         elementParent.SetParent(districtParent);
         roadParent.SetParent(districtParent);
 
-        foreach(GameObject element in i_elements)
+        foreach (GameObject element in i_elements)
         {
             element.transform.SetParent(elementParent);
         }
 
-        foreach(GameObject road in i_roads)
+        foreach (GameObject road in i_roads)
         {
             road.transform.SetParent(roadParent);
         }

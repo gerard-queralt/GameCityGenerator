@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,7 +5,6 @@ using System.Linq;
 
 using static Road;
 using static City;
-using System;
 
 public class ElementPlacer
 {

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Advanced City Element", menuName = "City Generator/Advanced City Element", order = 1)]

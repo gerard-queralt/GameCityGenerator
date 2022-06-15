@@ -1,14 +1,11 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 using static City;
-using static ElementPlacer;
 
 public class ElementPositionSelector
 {
-    private Dictionary<CityElementPair, float> m_affinities; //left here for now
+    private Dictionary<CityElementPair, float> m_affinities;
     private HeuristicCalculator m_heuristic;
 
     public ElementPositionSelector(Dictionary<CityElementPair, float> i_affinities, HeuristicCalculator i_heuristic)

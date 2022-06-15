@@ -23,18 +23,22 @@ public class AlgorithmMain
             Debug.Log("Temporary layer could not be created");
         }
 
-        Bounds area = m_params.area;
+        HashSet<District> districts = m_params.districts;
+        foreach (District district in districts)
+        {
+            Bounds area = district.area;
 
-        PositionCalculator positionCalculator = new PositionCalculator(area);
-        ElementPlacer elementPlacer = new ElementPlacer(positionCalculator, area, m_params.targetInhabitants);
-        RoadBuilder roadBuilder = new RoadBuilder(positionCalculator, area);
+            PositionCalculator positionCalculator = new PositionCalculator(area);
+            ElementPlacer elementPlacer = new ElementPlacer(positionCalculator, area, district.targetInhabitants);
+            RoadBuilder roadBuilder = new RoadBuilder(positionCalculator, area);
 
-        HashSet<Road> roads = roadBuilder.BuildRoads(m_params.roadWidthMin, m_params.roadWidthMax, m_params.nCrossroads);
+            HashSet<Road> roads = roadBuilder.BuildRoads(district.roadWidthMin, district.roadWidthMax, district.nCrossroads);
 
-        HashSet<GameObject> roadInstances = roadBuilder.InstantiateRoads(roads, m_params.roadTexture);
-        HashSet<GameObject> elementInstances = elementPlacer.PlaceElements(m_params.cityElements, roads, m_params.affinities, m_params.heuristic);
+            HashSet<GameObject> roadInstances = roadBuilder.InstantiateRoads(roads, district.roadTexture);
+            HashSet<GameObject> elementInstances = elementPlacer.PlaceElements(district.cityElements, roads, m_params.affinities, m_params.heuristic);
+        }
 
-        CreateHierarchy(elementInstances, roadInstances);
+        //CreateHierarchy(elementInstances, roadInstances);
 
         if (layerCreated)
         {

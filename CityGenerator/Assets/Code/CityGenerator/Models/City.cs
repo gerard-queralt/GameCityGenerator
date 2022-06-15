@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class City : MonoBehaviour
 {
@@ -18,39 +19,17 @@ public class City : MonoBehaviour
         public CityElement second;
     }
 
-    [SerializeField] uint m_targetInhabitants;
-    [SerializeField] Bounds m_area;
-    [SerializeField] CityElement[] m_elementsArray;
-    private HashSet<CityElement> m_elements;
+    [SerializeField] District[] m_districtsArray;
+    private HashSet<District> m_districts;
     [SerializeField] CityElementAffinity[] m_affinitiesArray;
     private Dictionary<CityElementPair, float> m_affinities;
-    [SerializeField] Texture m_roadTexture;
-    [SerializeField] float m_roadWidthMin;
-    [SerializeField] float m_roadWidthMax;
-    [SerializeField] uint m_crossroads;
     [SerializeField] HeuristicCalculator m_heuristic;
 
-    public uint targetInhabitants
+    public HashSet<District> districts
     {
         get
         {
-            return m_targetInhabitants;
-        }
-    }
-
-    public Bounds area
-    {
-        get
-        {
-            return m_area;
-        }
-    }
-
-    public HashSet<CityElement> cityElements
-    {
-        get
-        {
-            return m_elements;
+            return m_districts;
         }
     }
 
@@ -59,43 +38,6 @@ public class City : MonoBehaviour
         get
         {
             return m_affinities;
-        }
-    }
-
-    public Texture roadTexture
-    {
-        get
-        {
-            return m_roadTexture;
-        }
-    }
-
-    public float roadWidthMin
-    {
-        get
-        {
-            return m_roadWidthMin;
-        }
-    }
-
-    public float roadWidthMax
-    {
-        get
-        {
-            return m_roadWidthMax;
-        }
-    }
-
-    public uint nCrossroads
-    {
-        get
-        {
-            if(m_crossroads == 0)
-            {
-                uint randomNumber = (uint) Mathf.RoundToInt(Random.Range(0, /*tmp*/ 10));
-                return randomNumber;
-            }
-            return m_crossroads;
         }
     }
 
@@ -109,7 +51,11 @@ public class City : MonoBehaviour
 
     public void Generate()
     {
-        m_elements = new HashSet<CityElement>(m_elementsArray);
+        m_districts = new HashSet<District>(m_districtsArray);
+        foreach (District district in m_districts)
+        {
+            district.CreateElementsSet();
+        }
         m_affinities = PopulateDictionary(m_affinitiesArray);
         if (m_heuristic == null)
         {
@@ -121,6 +67,9 @@ public class City : MonoBehaviour
 
     private Dictionary<CityElementPair, float> PopulateDictionary(CityElementAffinity[] i_affinities)
     {
+        HashSet<CityElement> cityElements = m_districts.Aggregate(new HashSet<CityElement>(),
+                                                                  (elements, district) => new HashSet<CityElement>(elements.Concat(district.cityElements)));
+
         Dictionary<CityElementPair, float>  affinities = new Dictionary<CityElementPair, float>();
         int index = 0; //Used to give better warnings
         foreach (CityElementAffinity affinity in i_affinities)
@@ -129,9 +78,9 @@ public class City : MonoBehaviour
             Debug.Assert(affinity.elementB != null, "Element B not set in affinity " + index);
             if (affinity.elementA && affinity.elementB)
             {
-                Debug.Assert(m_elements.Contains(affinity.elementA),
+                Debug.Assert(cityElements.Contains(affinity.elementA),
                                 "Element A [" + affinity.elementA.name + "] is not an element of the City, so this affinity will have no effect");
-                Debug.Assert(m_elements.Contains(affinity.elementB),
+                Debug.Assert(cityElements.Contains(affinity.elementB),
                                 "Element B [" + affinity.elementB.name + "] is not an element of the City, so this affinity will have no effect");
                 
                 CityElementPair pair = new CityElementPair { first = affinity.elementA, second = affinity.elementB };

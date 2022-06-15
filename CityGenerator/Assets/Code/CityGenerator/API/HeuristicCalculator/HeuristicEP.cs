@@ -7,7 +7,7 @@ public abstract class HeuristicEP<T> : HeuristicCalculator where T : CityElement
     public sealed override float Calculate(CityElement i_element,
                                            Vector3 i_position,
                                            CityElementInstance i_placedElement,
-                                           Dictionary<CityGeneratorParameters.CityElementPair, float> i_affinities)
+                                           Dictionary<City.CityElementPair, float> i_affinities)
     {
         T element = (T)i_element;
         T placedElement = (T)i_placedElement.m_element;
@@ -18,5 +18,5 @@ public abstract class HeuristicEP<T> : HeuristicCalculator where T : CityElement
                                     Vector3 i_position,
                                     T i_placedElement,
                                     CityElementInstance i_placedElementGameObject,
-                                    Dictionary<CityGeneratorParameters.CityElementPair, float> i_affinities);
+                                    Dictionary<City.CityElementPair, float> i_affinities);
 }

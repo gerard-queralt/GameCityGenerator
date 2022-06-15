@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using static CityGeneratorParameters;
+using static City;
 
 public abstract class HeuristicCalculator : ScriptableObject
 {

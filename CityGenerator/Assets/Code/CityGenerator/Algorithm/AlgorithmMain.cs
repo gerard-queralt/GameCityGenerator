@@ -6,11 +6,11 @@ using UnityEditor;
 
 public class AlgorithmMain
 {
-    CityGeneratorParameters m_params;
+    City m_params;
 
     private string m_tmpObjectsLayerName = "CityGenerator_TMPObjects";
 
-    public AlgorithmMain(CityGeneratorParameters i_params)
+    public AlgorithmMain(City i_params)
     {
         m_params = i_params;
     }

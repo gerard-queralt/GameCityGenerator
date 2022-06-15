@@ -5,7 +5,7 @@ using UnityEngine;
 using System.Linq;
 
 using static Road;
-using static CityGeneratorParameters;
+using static City;
 using System;
 
 public class ElementPlacer

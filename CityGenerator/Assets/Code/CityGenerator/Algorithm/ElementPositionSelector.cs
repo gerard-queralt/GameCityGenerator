@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using static CityGeneratorParameters;
+using static City;
 using static ElementPlacer;
 
 public class ElementPositionSelector

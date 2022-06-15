@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CityGeneratorParameters
+public class City : MonoBehaviour
 {
     [System.Serializable]
     public struct CityElementAffinity
@@ -18,15 +18,17 @@ public class CityGeneratorParameters
         public CityElement second;
     }
 
-    private uint m_targetInhabitants;
-    private Bounds m_area;
+    [SerializeField] uint m_targetInhabitants;
+    [SerializeField] Bounds m_area;
+    [SerializeField] CityElement[] m_elementsArray;
     private HashSet<CityElement> m_elements;
+    [SerializeField] CityElementAffinity[] m_affinitiesArray;
     private Dictionary<CityElementPair, float> m_affinities;
-    private Texture m_roadTexture;
-    private float m_roadWidthMin;
-    private float m_roadWidthMax;
-    private uint m_crossroads;
-    private HeuristicCalculator m_heuristic;
+    [SerializeField] Texture m_roadTexture;
+    [SerializeField] float m_roadWidthMin;
+    [SerializeField] float m_roadWidthMax;
+    [SerializeField] uint m_crossroads;
+    [SerializeField] HeuristicCalculator m_heuristic;
 
     public uint targetInhabitants
     {
@@ -105,32 +107,16 @@ public class CityGeneratorParameters
         }
     }
 
-    public CityGeneratorParameters(uint i_targetInhabitants,
-                                   Bounds i_area,
-                                   CityElement[] i_cityElements,
-                                   CityElementAffinity[] i_affinities,
-                                   Texture i_roadTexture,
-                                   float i_roadWidthMin,
-                                   float i_roadWidthMax,
-                                   uint i_crossroads,
-                                   HeuristicCalculator i_heuristic)
+    public void Generate()
     {
-        m_targetInhabitants = i_targetInhabitants;
-        m_area = i_area;
-        m_elements = new HashSet<CityElement>(i_cityElements);
-        m_affinities = PopulateDictionary(i_affinities);
-        m_roadTexture = i_roadTexture;
-        m_roadWidthMin = i_roadWidthMin;
-        m_roadWidthMax = i_roadWidthMax;
-        m_crossroads = i_crossroads;
-        if (i_heuristic != null)
-        {
-            m_heuristic = i_heuristic;
-        }
-        else
+        m_elements = new HashSet<CityElement>(m_elementsArray);
+        m_affinities = PopulateDictionary(m_affinitiesArray);
+        if (m_heuristic == null)
         {
             m_heuristic = ScriptableObject.CreateInstance<DefaultHeuristic>();
         }
+        AlgorithmMain algorithmMain = new AlgorithmMain(this);
+        algorithmMain.Run();
     }
 
     private Dictionary<CityElementPair, float> PopulateDictionary(CityElementAffinity[] i_affinities)
